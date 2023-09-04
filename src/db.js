@@ -1,7 +1,8 @@
 const { Sequelize } = require("sequelize");
+const { postgresString } = require("./config");
 
 const sequelize = new Sequelize(
-   process.env.POSTGRES_STRING,
+  postgresString,
   {
     logging: false,
     native: false,

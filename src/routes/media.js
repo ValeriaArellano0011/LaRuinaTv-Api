@@ -14,41 +14,31 @@ const {
   updateImageAndMeta
 } = require("../controllers/media.js");
 const sgMail = require('@sendgrid/mail');
-const { SENDGRID_API } = process.env;
-
+const { sendgridApi } = require("../config/index.js");
 
 //------ GET ALL IMAGES(SLIDERS & VISOR) -------
 
 router.get("/getall", async (req, res) => {
-  // try{
-  // const responses = await listPostImages();
-  // console.log(responses)
-  // Promise.all(await responses?.at(0)).then(response=>{
-  // return res.status(200).json(response)})
-  // } catch (error) {
-  //   console.log(error);
-  //   return res.status(400)
-  // }
-
   try {
     //slider
-    const responsesSlider = await listPostImages()
-    const resolvedResponsesSlider = await Promise.all(responsesSlider)
-    const flattenResponsesSlider = Array.prototype.concat.apply([], resolvedResponsesSlider)
+    const responsesSlider = await listPostImages();
+    const resolvedResponsesSlider = await Promise.all(responsesSlider);
+    const flattenResponsesSlider = Array.prototype.concat.apply([], resolvedResponsesSlider);
     const uniqueResponsesSlider = Array.from(new Set(flattenResponsesSlider));
     //visor
-    const responsesVisor = await listPostVisorImages()
-    const resolvedResponsesVisor = await Promise.all(responsesVisor)
-    const flattenResponsesVisor = Array.prototype.concat.apply([], resolvedResponsesVisor)
+    const responsesVisor = await listPostVisorImages();
+    const resolvedResponsesVisor = await Promise.all(responsesVisor);
+    const flattenResponsesVisor = Array.prototype.concat.apply([], resolvedResponsesVisor);
     const uniqueResponsesVisor = Array.from(new Set(flattenResponsesVisor));
-    return res.status(200).json({ slider: uniqueResponsesSlider, visor: uniqueResponsesVisor })
+    return res.status(200).json({ slider: uniqueResponsesSlider, visor: uniqueResponsesVisor });
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    return res.status(500).send(error);
   }
 })
 
 router.get("/:id", async (req, res) => {
-  const { id } = req.params
+  const { id } = req.params;
   // try{
   //   const responses = await listPostImages();
   //   Promise.all(await responses.at(0)).then(response=>{
@@ -66,6 +56,7 @@ router.get("/:id", async (req, res) => {
     return res.status(200).json(resp)
   } catch (error) {
     console.log(error)
+    return res.status(500).send(error)
   }
 })
 
@@ -97,7 +88,8 @@ const uploadImage = async (mapping, mappingImages, mappingFiles, res) => {
     return res.status(200).json(response);
   } catch (error) {
     console.log(error);
-  }
+    return res.status(500).send({ error: "Error al subir la imagen" });
+  } 
 }
 
 const uploadImageTemp = async (req, res) => {
@@ -152,7 +144,7 @@ const uploadImageTemp = async (req, res) => {
   bb.on("close", () => {
     console.log("Done uploading!")
     uploadImage(mapping, mappingImages, mappingFiles, res)
-    sgMail.setApiKey(SENDGRID_API);
+    sgMail.setApiKey(sendgridApi);
     getEmails()
   });
 

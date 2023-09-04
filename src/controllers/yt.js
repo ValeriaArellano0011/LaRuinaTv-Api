@@ -60,6 +60,7 @@ const youtube = google.youtube({
 });
 
 async function checkSubscription(email) {
+  try {
     const response = await youtube.subscriptions.list({
       part: 'id,snippet',
       mine: true,
@@ -68,9 +69,15 @@ async function checkSubscription(email) {
     const subscriptions = await response.data.items;
     console.log(subscriptions)
     const isSubscribed = subscriptions.some(subscription => subscription.snippet.email === email)
+
+    return;
+  } catch (error) {
+    return error;
+  }
 }
 
 async function getMyChannelName() {
+  try {
     const response = await youtube.channels.list({
       part: 'snippet',
       mine: true
@@ -82,7 +89,10 @@ async function getMyChannelName() {
     console.log(channelName)
   
     return channelName;
+  } catch (error) {
+    return error;
   }
+}
 
 const isUserSubscribed = async (req, res) => {
     getMyChannelName()

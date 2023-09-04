@@ -2,31 +2,28 @@ const { User } = require("../models/User.js")
 const bcrypt = require("bcrypt");
 const sgMail = require('@sendgrid/mail');
 const crypto = require('crypto');
-const { SENDGRID_API } = process.env;
-
+const { sendgridSecret, sendgridApi } = require("../config/index.js");
 
 const createUser = async (req, res) => {
-
-  sgMail.setApiKey(SENDGRID_API);
-  const secret = 'asdjahsdjashduiasheiudncskmxsc';
-
-  let { alias, email, password } = req.body;
-  if (!alias) {
-    throw new Error("El alias es requerido");
-  } else if (!email) {
-    throw new Error("el email es requerido");
-  } else if (!password) {
-    throw new Error("La contraseña es requerida");
-  } else {
-    const exists = await User.findOne({ where: { email: email } });
-    if (exists) throw new Error("El email ya está en uso.");
-  }
-
-  const salt = await bcrypt.genSalt();
-  const hashPassword = await bcrypt.hash(password, salt);
-
+  sgMail.setApiKey(sendgridApi);
+  
   try {
-    const hmac = crypto.createHmac('sha256', secret);
+    let { alias, email, password } = req.body;
+    if (!alias) {
+      throw new Error("El alias es requerido");
+    } else if (!email) {
+      throw new Error("el email es requerido");
+    } else if (!password) {
+      throw new Error("La contraseña es requerida");
+    } else {
+      const exists = await User.findOne({ where: { email: email } });
+      if (exists) throw new Error("El email ya está en uso.");
+    }
+
+    const salt = await bcrypt.genSalt();
+    const hashPassword = await bcrypt.hash(password, salt);
+
+    const hmac = crypto.createHmac('sha256', sendgridSecret);
     hmac.update(email);
     const token = hmac.digest('hex');
     await User.create({

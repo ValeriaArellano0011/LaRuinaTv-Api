@@ -2,8 +2,8 @@ const { Likes } = require("../models/likes.js")
 const { listPostVisorImages, listPostImages } = require('../controllers/media')
 
 const addLike = async (req, res) => {
+    const { urlId, idUser } = req.body;
     try {
-        const { urlId, idUser } = req.body;
         const like = await Likes.findOne({
             where: {
                 urlId: urlId,
@@ -34,6 +34,7 @@ const addLike = async (req, res) => {
         // res.status(200).send({ message: 'Me gusta agregado', likes: contentLikes[contentId] });
     } catch (error) {
         console.log(error)
+        return res.status(500).json(error)
     }
 
 }

@@ -70,7 +70,7 @@ const DB_LARUINATV_MEDIA = [
         genre: 'metal'
     },
     {
-        id: 005,
+        id: 5,
         idMedia: {idYT:'7C8SdVEpj9k', idSpty:'', idDrive:''}, //&list=OLAK5uy_nlnLI24tL90QP7jgSfjC2ZhDMyxOrtLk4
         typeMedia: 'musica',
         title: "Barrios Bajos Blues",
@@ -83,7 +83,7 @@ const DB_LARUINATV_MEDIA = [
         genre: 'blues'
     },
     {
-        id: 006,
+        id: 6,
         idMedia: {idWeb:'', idDrive:'', urlDescarga:''},
         typeMedia: 'libro',
         title: "La Espada Oxidada",

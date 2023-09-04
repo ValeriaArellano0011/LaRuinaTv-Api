@@ -1,6 +1,7 @@
-const { Playlist } = require("../models/PlayLists.js")
+const { Playlist } = require("../models/PlayLists.js");
 const { Item } = require("../models/Item.js");
 const { getMp3Id } = require("./media.js");
+
 // create playlist
 const addPlaylist = async (req, res) => {
     const { playlistName, idUser } = req.body;
@@ -12,34 +13,39 @@ const addPlaylist = async (req, res) => {
         return res.status(200).json(newplaylist)
     } catch (error) {
         console.log(error + "error ruta")
+        return res.status(400).json({ error: error })
     }
 }
 
 const addItemToPlaylist = async (req, res) => {
     const { playlistId, connectionId } = req.body;
     console.log('la playlistId', playlistId)
-    const audio = await getMp3Id(connectionId)
-
-    const playlist = await Playlist.findOne(
-        { where: { id: playlistId } }
-    )
-
-    const playlistItem = await Item.create({
-        name: audio.appProperties.title,
-        artist: audio.appProperties.artist,
-        url: audio.id
-    })
-
-    playlist.addItem(playlistItem)
-    console.log(playlist)
-
-    // const items = await Item.findAll({ where: { playlistId: playlistId } });
-
-    const items = await playlist.getItems()
-
-    console.log('los items de la playlist', items)
-
-    return res.status(200).json(items)
+    try {
+        const audio = await getMp3Id(connectionId)
+    
+        const playlist = await Playlist.findOne(
+            { where: { id: playlistId } }
+        )
+    
+        const playlistItem = await Item.create({
+            name: audio.appProperties.title,
+            artist: audio.appProperties.artist,
+            url: audio.id
+        })
+    
+        playlist.addItem(playlistItem)
+        console.log(playlist)
+    
+        // const items = await Item.findAll({ where: { playlistId: playlistId } });
+    
+        const items = await playlist.getItems()
+    
+        console.log('los items de la playlist', items)
+    
+        return res.status(200).json(items)
+    } catch (error) {
+        return res.status(400).json({ error: error })
+    }
 }
 
 // get all playlist
@@ -48,19 +54,23 @@ const getAllPlaylist = async (req, res) => {
     try {
         let data = await Playlist.findAll({where: {
             userId: userId
-        }})
-        return res.status(200).json(data)
+        }});
+        return res.status(200).json(data);
     } catch (error) {
-        console.log(error)
+        console.log(error);
+        return res.status(400).json({ error: error });
     }
 }
 
 // delete playlist by id
 const deletePlaylist = async (req, res) => {
-
-    let id = req.params.id
-    await Playlist.destroy({ where: { id: id } })
-    res.status(200).sed("Playlist is deleted")
+    let id = req.params.id;
+    try {
+        await Playlist.destroy({ where: { id: id } });
+        return res.status(200).sed("Playlist is deleted");
+    } catch (error) {
+        return res.status(400).json({ error: error });
+    }
 }
 
 

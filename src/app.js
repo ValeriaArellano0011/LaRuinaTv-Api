@@ -1,12 +1,9 @@
-require("dotenv").config();
-const morgan = require('morgan');
-const cors = require('cors')
+require('./passport');
 const express = require('express');
 const server = express();
 const routes = require('./routes/index.js');
 const passport = require('passport');
 const cookieSession = require('cookie-session');
-require('./passport');
 const { User } = require('./models/User');
 
 server.use(cookieSession({
