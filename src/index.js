@@ -10,7 +10,6 @@ async function main() {
     server.listen(port, ()=> console.log(`server listening on port ${port}`))
   } catch (error) {
     console.error("Unable to connect to database");
-    server.listen(port, ()=> console.log(`server listening on port ${port}`))
   }
 };
 
