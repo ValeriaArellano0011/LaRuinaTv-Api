@@ -1,4 +1,6 @@
-require('dotenv').config();
+const development = "development";
+const production = "production";
+
 const { wogIcon, ruinaRecordsIcon} = process.env
 
 const DB_LARUINATV_MEDIA = [
@@ -98,5 +100,7 @@ const DB_LARUINATV_MEDIA = [
 ]
 
 module.exports = { 
+    development,
+    production,
     DB_LARUINATV_MEDIA
 }

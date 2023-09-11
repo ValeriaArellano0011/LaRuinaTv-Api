@@ -40,13 +40,13 @@ router.get('/callback/failure', (req, res) => {
 
 router.get('/', passport.authenticate('google', {
   scope: [
-          'email',
-          'profile', 
-          'https://www.googleapis.com/auth/userinfo.email', 
-          'https://www.googleapis.com/auth/userinfo.profile', 
-          'https://www.googleapis.com/auth/plus.me'
-      ],
-      accessType: 'offline'
+    'email',
+    'profile', 
+    'https://www.googleapis.com/auth/userinfo.email', 
+    'https://www.googleapis.com/auth/userinfo.profile', 
+    'https://www.googleapis.com/auth/plus.me'
+  ],
+  accessType: 'offline'
 }));
 
 router.get('/google/callback',

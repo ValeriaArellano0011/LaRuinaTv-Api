@@ -1,7 +1,8 @@
+const { production } = require("../misc/consts");
+
 module.exports = {
-  port: process.env.PORT,
   environment: process.env.NODE_ENV,
-  
+  port: process.env.PORT,
   idVisorFolder: process.env.VISOR_FOLDER,
   idSliderFolder: process.env.SLIDER_FOLDER,
   idAudioFolder: process.env.AUDIO_FOLDER,
@@ -24,5 +25,5 @@ module.exports = {
   emailTest: process.env.EMAIL_TEST, 
   passwordTest: process.env.PASSWORD_TEST, 
   
-  postgreString: process.env.POSTGRES_STRING,
+  postgreString: process.env.NODE_ENV === production ? process.env.POSTGRES_STRING_PROD : process.env.POSTGRES_STRING,
 }
