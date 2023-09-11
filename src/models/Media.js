@@ -2,7 +2,7 @@ const { DataTypes } = require("sequelize");
 const { sequelize } = require('../integrations/postgreSQL');
 const { Likes } = require('./Likes.js')
 
-const Media = sequelize.define('item', {
+const Media = sequelize.define('media', {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -22,6 +22,6 @@ const Media = sequelize.define('item', {
     }
 })
 
-Likes.hasMany(Media, { foreignKey: 'playlistId' });
+Likes.hasMany(Media, { foreignKey: 'mediaId' });
 
-module.exports = { Media }
+module.exports = { Media };

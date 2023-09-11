@@ -8,7 +8,6 @@ const { User } = require("../models/User.js");
 const {
   uploadFile,
   listPostImages,
-  contentController,
   getEditMedia,
   listPostVisorImages,
   updateImageAndMeta
@@ -20,20 +19,11 @@ const { sendgridApi } = require("../config/index.js");
 
 router.get("/getall", async (req, res) => {
   try {
-    //slider
-    const responsesSlider = await listPostImages();
-    const resolvedResponsesSlider = await Promise.all(responsesSlider);
-    const flattenResponsesSlider = Array.prototype.concat.apply([], resolvedResponsesSlider);
-    const uniqueResponsesSlider = Array.from(new Set(flattenResponsesSlider));
-    //visor
-    const responsesVisor = await listPostVisorImages();
-    const resolvedResponsesVisor = await Promise.all(responsesVisor);
-    const flattenResponsesVisor = Array.prototype.concat.apply([], resolvedResponsesVisor);
-    const uniqueResponsesVisor = Array.from(new Set(flattenResponsesVisor));
-    return res.status(200).json({ slider: uniqueResponsesSlider, visor: uniqueResponsesVisor });
+
+    return res.status(200).json("asd");
   } catch (error) {
     console.log(error);
-    return res.status(500).send(error);
+    return res.status(500).send("error");
   }
 })
 
@@ -59,14 +49,6 @@ router.get("/:id", async (req, res) => {
     return res.status(500).send(error)
   }
 })
-
-////////// LIKE //////////////
-
-
-router.post('/:id/like', contentController.likeContent);
-
-
-//////////////////////////////
 
 //----------- UPLOAD IMAGE ---------
 
@@ -183,61 +165,6 @@ router.get('/edit/:id', async (req, res) => {
     console.log(error)
   }
 })
-
-// const updateImage = async (mapping, res) => {
-//   try {
-//     const response = await updateImageAndMeta(
-//       mapping
-//     );
-//     return res.status(200).json(response);
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
-
-// const UpdateImageMeta = async (req, res) => {
-//   var mapping = new Map()
-//   const bb = busboy({ headers: req.headers });
-//   bb.on("file", (name, file, info) => {
-//     if(file){
-//       const { filename, encoding, mimeType } = info;
-
-//       console.log(
-//         `File [${name}]: filename: %j, encoding: %j, mimeType: %j`,
-//         filename,
-//         encoding,
-//         mimeType
-//       );
-//       if(name === 'imageSlider'){
-//         console.log('image slider: ', filename)
-//         mapping.set('imageSlider', filename)
-//         const saveTo = path.join(os.tmpdir(), `slider-image-${filename}`);
-//         file.pipe(fs.createWriteStream(saveTo));
-//       }else if(name === 'imageVisor'){
-//         console.log('image visor: ', filename)
-//         if(filename === null){
-//           mapping.set('imageVisor', null)
-//           return
-//         }
-//         mapping.set('imageVisor', filename)
-//         const saveTo = path.join(os.tmpdir(), `visor-image-${filename}`);
-//         file.pipe(fs.createWriteStream(saveTo));
-//       }
-//     }else{
-//       mapping.set('imageVisor', 'same')
-//       mapping.set('imageSlider', 'same')
-//     }
-//   });
-//   bb.on("field", (name, val) => {
-//       mapping.set(name, val)
-//   });
-//   bb.on("close", () => {
-//     console.log("Done uploading!")
-//     updateImage(mapping, res)
-//   });
-
-//   req.pipe(bb);
-// }
 
 const updateImage = async (mapping, mappingImages, mappingFiles, res) => {
 

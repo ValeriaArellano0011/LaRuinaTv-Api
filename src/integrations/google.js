@@ -1,12 +1,12 @@
-const { POST_CLIENT_ID, POST_CLIENT_SECRET, REDIRECT_URI, REFRESH_TOKEN, API_KEY } = process.env;
 const { google } = require('googleapis');
+const { refreshToken, mediaClientId, mediaClientSecret, redirectUri } = require('../config');
 
 const oauth2Client = new google.auth.OAuth2(
-  POST_CLIENT_ID,
-  POST_CLIENT_SECRET,
-  REDIRECT_URI)
+  mediaClientId,
+  mediaClientSecret,
+  redirectUri)
 
-oauth2Client.setCredentials({refresh_token: REFRESH_TOKEN})
+oauth2Client.setCredentials({refresh_token: refreshToken})
 
 const drive = google.drive({
   version: 'v3',

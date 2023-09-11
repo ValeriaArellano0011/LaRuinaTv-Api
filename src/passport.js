@@ -1,4 +1,5 @@
 const passport = require('passport');
+const { authClientId, authClientSecret } = require('./config');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
   
 passport.deserializeUser(function(user, done) {
@@ -10,13 +11,13 @@ passport.serializeUser((user, done) => {
 });
   
 passport.use(new GoogleStrategy({
-    clientID: '874900879874-6fa06c807bf57v30mp7o376a5rs9tmg5.apps.googleusercontent.com',
-    clientSecret: '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',
-    callbackURL: `https://terminalkiller.fly.dev/auth/google/callback`,
+    clientID: authClientId,
+    clientSecret: authClientSecret,
+    callbackURL: `https://laruinatv-api.fly.dev/auth/google/callback`,
   },
   function(accessToken, refreshToken, profile, done) {
     return done(null, { ...profile, accessToken });
   }
 ));
 
-module.exports = passport
+module.exports = passport;

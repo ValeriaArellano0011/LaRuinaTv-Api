@@ -10,9 +10,7 @@ router.get('/laruina/tv/callback/success', async (req, res) => {
   }
   const accessToken = req.user.accessToken;
   const existingUser = await User.findOne({
-      where: {
-          email: req.user.emails[0].value,
-      }
+      where: { email: req.user.emails[0].value }
   });
   
   if (existingUser) {

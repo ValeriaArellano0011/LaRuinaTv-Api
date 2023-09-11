@@ -3,8 +3,8 @@ const { Likes } = require("../models/Likes.js");
 const { listPostVisorImages, listPostImages } = require('../helpers/media.js');
 
 router.post("/add", async (req, res) => {
-    const { urlId, idUser } = req.body;
     try {
+        const { urlId, idUser } = req.body;
         const like = await Likes.findOne({
             where: {
                 urlId: urlId,
@@ -40,8 +40,8 @@ router.post("/add", async (req, res) => {
         
     });
 router.post("/getAll", async (req, res) => {
-    const { userId } = req.body
     try {
+        const { userId } = req.body
         const allLikes = await Likes.findAll({
             where: {
                 userId: userId

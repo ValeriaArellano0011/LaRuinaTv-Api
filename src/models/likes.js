@@ -21,4 +21,4 @@ const Likes = sequelize.define('likes', {
 Likes.belongsTo(User, { foreignKey: 'userId' });
 User.hasMany(Likes, { foreignKey: 'userId' });
 
-module.exports = { Likes }
+module.exports = { Likes };

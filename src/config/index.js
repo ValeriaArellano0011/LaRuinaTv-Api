@@ -2,9 +2,18 @@ module.exports = {
   port: process.env.PORT,
   postgreString: process.env.POSTGRES_STRING,
   
-  visorFolder: process.env.VISOR_FOLDER,
-  sliderFolder: process.env.SLIDER_FOLDER,
-  
+  idVisorFolder: process.env.VISOR_FOLDER,
+  idSliderFolder: process.env.SLIDER_FOLDER,
+  mediaClientId: process.env.MEDIA_CLIENT_ID,
+  mediaClientSecret: process.env.MEDIA_CLIENT_SECRET,
+  refreshToken: process.env.REFRESH_TOKEN,
+  accessToken: process.env.ACCESS_TOKEN,
+  redirectUri: process.env.REDIRECT_URI,
+
+  authClientId: process.env.AUTH_CLIENT_ID,
+  authClientSecret: process.env.AUTH_CLIENT_SECRET,
+  authClientUrl: process.env.AUTH_CLIENT_URL,
+
   sendgridApi: process.env.SENDGRID_API,
   sendgridSecret: process.env.SENDGRID_SECRET,
 
@@ -12,4 +21,5 @@ module.exports = {
   emailTest: process.env.EMAIL_TEST, 
   passwordTest: process.env.PASSWORD_TEST, 
   
+
 }

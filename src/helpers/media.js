@@ -1,9 +1,8 @@
 const { google } = require("googleapis");
 const fs = require("fs");
 const os = require('os');
-const { POST_CLIENT_ID, POST_CLIENT_SECRET, REDIRECT_URI, REFRESH_TOKEN, VISOR_FOLDER, SLIDER_FOLDER } =
-  process.env;
 const path = require("path");
+const { refreshToken, idSliderFolder } = require("../config");
 
 const oauth2Client = new google.auth.OAuth2(
   '874900879874-5hn8fcdnj01vckdokqr9a6b6fgvo8mkh.apps.googleusercontent.com',
@@ -11,7 +10,7 @@ const oauth2Client = new google.auth.OAuth2(
   'https://developers.google.com/oauthplayground'
 );
 
-oauth2Client.setCredentials({ refresh_token: REFRESH_TOKEN});
+oauth2Client.setCredentials({ refresh_token: refreshToken});
 
 async function refreshAccessToken() {
   try {
@@ -306,8 +305,8 @@ async function listPostImages() {
   const list = []
   try {
     const response = await drive.files.list({
-      fileId: "1AHVpvZukrnEgJzwdCjDDnpUxuDob8Lbe", //slider 
-      q: `'1AHVpvZukrnEgJzwdCjDDnpUxuDob8Lbe' in parents`,
+      fileId: idSliderFolder, //slider 
+      q: `${idSliderFolder} in parents`,
       fields: "files(id, name, appProperties)",
     });
 
@@ -326,9 +325,9 @@ async function listPostImages() {
 async function listAndCountSliderImgs() {
   try {
     const response = await drive.files.list({
-      fileId: "1AHVpvZukrnEgJzwdCjDDnpUxuDob8Lbe", //slider 
-      q: `'1AHVpvZukrnEgJzwdCjDDnpUxuDob8Lbe' in parents`,
-      fields: "files(appProperties)",
+      fileId: idSliderFolder, //slider 
+      q: `${idSliderFolder} in parents`,
+      fields: "files(id, name, appProperties)",
     });
     var slidersLength = response.data.files.length
     return slidersLength
@@ -364,8 +363,8 @@ async function listPostVisorImages() {
   const list = []
   try {
     const response = await drive.files.list({
-      fileId: "1XtXvvdt7wmHYNCPJ-kPLpuPOFqS70_1k", //slider 
-      q: `'1XtXvvdt7wmHYNCPJ-kPLpuPOFqS70_1k' in parents`,
+      fileId: idSliderFolder, //slider 
+      q: `${idSliderFolder} in parents`,
       fields: "files(id, name, appProperties)",
     });
 
@@ -400,9 +399,9 @@ async function getMp3Id (id) {
 async function listProdImages() {
   try {
     const response = await drive.files.list({
-      fileId: "1AHVpvZukrnEgJzwdCjDDnpUxuDob8Lbe", //sliders
-      q: `'1AHVpvZukrnEgJzwdCjDDnpUxuDob8Lbe' in parents`,
-      fields: "files(id, name)",
+      fileId: idSliderFolder, //slider 
+      q: `${idSliderFolder} in parents`,
+      fields: "files(id, name, appProperties)",
     });
 
     const objs = response.data.files.map((e) => e)
@@ -435,23 +434,6 @@ async function listProdImages() {
     console.log(err);
   }
 }
-
-//--------Get Product By Name----------
-
-async function getProductByName() {
-  try {
-
-
-    const response = await drive.files.list({
-      fileId: "1hmPyVTGkRDjMgQVQJKSdNAVifNOVy2kA",
-      q: 'name = "producto1.png" and parents in "1BkJ-dQUAn_642S-dQU8ibV83r0ASs-ik"',
-    });
-    return await response.data;
-  } catch (err) {
-    console.log(err);
-  }
-}
-
 
 ///////////// LIKE /////////////////
 
@@ -674,12 +656,10 @@ const getEditMedia = async (req) => {
 module.exports = {
   uploadFile,
   createFile,
-  getProductByName,
   listProdImages,
   listPostImages,
   listPostVisorImages,
   getMp3Id,
-  contentController,
   getEditMedia,
   updateImageAndMeta,
   listPostVisorImages

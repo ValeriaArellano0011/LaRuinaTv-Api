@@ -11,7 +11,6 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-//♪ ♪ ♪ ♪ ♪ ♪ ♪ ♪ ♫ ♫ ♫ ♫ ♫ ♫ ♫ ♫
 router.post("/login", async (req, res) => {
   try {
     const response = await loginUser(req, res)
@@ -32,7 +31,6 @@ router.post("/loginwithgoogle", async (req, res) => {
 
 router.get('/verify-email/:token', (req, res) => {
   const token = req.params.token;
-  // const url = 'https://la-ruina-tv-client.vercel.app'
   const url = 'https://tv.laruinarecords.cl'
   try {
     const response = verifyEmail(token)
@@ -46,7 +44,6 @@ router.get('/verify-email/:token', (req, res) => {
 });
 
 router.delete("/delete-account/:id", (req, res) => {
-
   const id = req.params.id;
   const email = req.body.email;
   const password = req.body.password;
