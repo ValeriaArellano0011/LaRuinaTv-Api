@@ -1,7 +1,7 @@
 require("dotenv").config();
 const server = require('./app');
 const { port } = require("./config");
-const { sequelize } = require("./db.js");
+const { sequelize } = require("./integrations/postgreSQL");
 
 async function main() {
   try {
@@ -9,9 +9,9 @@ async function main() {
     console.log("succesfully connected");
     server.listen(port, ()=> console.log(`server listening on port ${port}`))
   } catch (error) {
-    server.listen(port, ()=> console.log(`server listening on port ${port}`))
     console.error("Unable to connect to database");
+    server.listen(port, ()=> console.log(`server listening on port ${port}`))
   }
-}
+};
 
 main();

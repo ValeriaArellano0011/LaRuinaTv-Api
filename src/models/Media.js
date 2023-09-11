@@ -1,8 +1,8 @@
 const { DataTypes } = require("sequelize");
-const { sequelize } = require('../db.js');
-const { Playlist } = require('./PlayLists.js')
+const { sequelize } = require('../integrations/postgreSQL');
+const { Likes } = require('./Likes.js')
 
-const Item = sequelize.define('item', {
+const Media = sequelize.define('item', {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -22,7 +22,6 @@ const Item = sequelize.define('item', {
     }
 })
 
-Playlist.hasMany(Item, { foreignKey: 'playlistId' });
-Item.belongsTo(Playlist, { foreignKey: 'playlistId' });
+Likes.hasMany(Media, { foreignKey: 'playlistId' });
 
-module.exports = { Item }
+module.exports = { Media }

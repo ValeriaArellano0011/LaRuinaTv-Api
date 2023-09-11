@@ -1,687 +1,333 @@
-const { google } = require("googleapis");
+const { Router } = require("express");
+const router = Router();
 const fs = require("fs");
-const os = require('os');
-const { POST_CLIENT_ID, POST_CLIENT_SECRET, REDIRECT_URI, REFRESH_TOKEN, VISOR_FOLDER, SLIDER_FOLDER } =
-  process.env;
 const path = require("path");
-
-const oauth2Client = new google.auth.OAuth2(
-  '874900879874-5hn8fcdnj01vckdokqr9a6b6fgvo8mkh.apps.googleusercontent.com',
-  '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',
-  'https://developers.google.com/oauthplayground'
-);
-
-oauth2Client.setCredentials({ refresh_token: REFRESH_TOKEN});
-
-async function refreshAccessToken() {
-  try {
-      const token = await oauth2Client.refreshAccessToken();
-      console.log(token)
-      oauth2Client.setCredentials({refresh_token: token.credentials.refresh_token});
-      return token.credentials.refresh_token
-  } catch (error) {
-      console.error('Error al actualizar los tokens:', error);
-  }
-}
-
-setInterval(() => {
-  refreshAccessToken();
-}, 5000 * 60);
-// 20 * 60000
-
-const drive = google.drive({
-  version: "v3",
-  auth: oauth2Client,
-});
-
-//--------Create File----------
-
-const createFile = async () => {
-  try {
-    const response = await drive.files.create({
-      metaData: {
-        parents: ["1hbwrmkNOkkXU8_tsbH5_6SM0nwECs7JI"],
-        resource: { appProperties: { categories: "tu vieja en tanga" } },
-      },
-      requestBody: {
-        name: "heyy.jpg", //file name
-        mimeType: "image/jpg",
-      },
-      media: {
-        mimeType: "image/jpg",
-        body: fs.createReadStream(filePath),
-      },
-    });
-    console.log(response.data);
-    return response.data;
-  } catch (error) {
-    console.log(error.message);
-    return error.message;
-  }
-};
-
-//----------LIST AUDIO IDs------------
-
-const getAudioIds = () => {
-  let audioFolder = '1-5iQClHhyavOERDhut0vhFsRg2EE14FP'
-
-
-}
-
-//--------Upload File----------
-
-async function uploadFile(result, mappingImages, mappingFiles) {
-  const filePathSlider = mappingImages.has('imageSlider') ? path.join(os.tmpdir(), `slider-image-${mappingImages.get('imageSlider')}`) : null;
-  const filePathVisor = mappingImages.has('imageVisor') ? path.join(os.tmpdir(), `visor-image-${mappingImages.get('imageVisor')}`) : null;
-  const filePathAudio = mappingFiles.has('audioFile') ? path.join(os.tmpdir(), `audio-file-${mappingFiles.get('audioFile')}`) : null;
-  const filePathVideo = mappingFiles.has('videoFile') ? path.join(os.tmpdir(), `video-file-${mappingFiles.get('videoFile')}`) : null;
-
-  const lengthSliders = await listAndCountSliderImgs()
-  const connectionId = `${result.get('title')}${lengthSliders}`
-
-  let parentsSlider = ['1AHVpvZukrnEgJzwdCjDDnpUxuDob8Lbe']
-  let parentVisor = ['1XtXvvdt7wmHYNCPJ-kPLpuPOFqS70_1k']
-  let parentAudio = ['1-5iQClHhyavOERDhut0vhFsRg2EE14FP']
-  let parentVideo = ['1-9w68xsizndeGlLDiWrPznFfwQReAGgx']
-  let appProperties = {
-    'id': Number(lengthSliders),
-    'artist': result.get('artist'),
-    'title': result.get('title'),
-    'info': result.get('info'),
-    'connectionId': connectionId,
-    'idLinkYT': result.get('idLinkYT'),
-    'idLinkSPOTY': result.get('idLinkSPOTY'),
-    'idLinkDRIVE': result.get('idLinkDRIVE'),
-    'urlLinkWEB': result.get('urlLinkWEB'),
-    'urlLinkDOWNLOAD': result.get('urlLinkDOWNLOAD'),
-    'idMedia': {},
-    'mediaType': result.get('mediaType'),
-    'categories': result.get('categories'),
-    'genre': result.get('genre')
-  }
-  let nameSlider = mappingImages.get('imageSlider') //file name
-  let nameVisor = mappingImages.get('imageVisor') //file name
-  let nameAudio = mappingFiles.get('audioFile') //file name
-  let nameVideo = mappingFiles.get('videoFile') //file name
-  let mimeType = "image/jpg"
-  let mimeTypeAudio = "audio/mpeg"
-  let mimeTypeVideo = "video/mp4"
-
-  let mediaSlider
-  if (filePathSlider) {
-    mediaSlider = {
-      mimeType: mimeType,
-      body: fs.createReadStream(filePathSlider),
-    };
-  }
-  let mediaVisor
-  if (filePathVisor) {
-    mediaVisor = {
-      mimeType: mimeType,
-      body: fs.createReadStream(filePathVisor),
-    }
-  };
-  let mediaAudio
-  if (filePathAudio) {
-    mediaAudio = {
-      mimeType: mimeTypeAudio,
-      body: fs.createReadStream(filePathAudio),
-    }
-  };
-  let mediaVideo
-  if (filePathVideo) {
-    mediaVideo = {
-      mimeType: mimeTypeVideo,
-      body: fs.createReadStream(filePathVideo),
-    };
-  }
-
-
-  try {
-    switch (mappingImages.size) {
-      case 1:
-        // Check if the first image is the slider or visor
-        if (mappingImages.has("imageSlider")) {
-          console.log("Uploading slider duplicated in visor.");
-          await drive.files.create({
-            resource: {
-              parents: parentsSlider,
-              appProperties: appProperties,
-              name: nameSlider,
-              mimeType: mimeType
-            },
-            media: {
-              mimeType: mimeType,
-              body: fs.createReadStream(filePathSlider),
-            },
-            fields: "appProperties",
-          });
-          await drive.files.create({
-            resource: {
-              parents: parentVisor,
-              appProperties: appProperties,
-              name: nameSlider,
-              mimeType: mimeType
-            },
-            media: {
-              mimeType: mimeType,
-              body: fs.createReadStream(filePathSlider),
-            },
-            fields: "appProperties",
-          });
-        } else if (mappingImages.has("imageVisor")) {
-          console.log("Uploading visor duplicated in slider.");
-          await drive.files.create({
-            resource: {
-              parents: parentVisor,
-              appProperties: appProperties,
-              name: nameVisor,
-              mimeType: mimeType
-            },
-            media: {
-              mimeType: mimeType,
-              body: fs.createReadStream(filePathVisor),
-            },
-            fields: "appProperties",
-          });
-          await drive.files.create({
-            resource: {
-              parents: parentsSlider,
-              appProperties: appProperties,
-              name: nameVisor,
-              mimeType: mimeType
-            },
-            media: {
-              mimeType: mimeType,
-              body: fs.createReadStream(filePathVisor),
-            },
-            fields: "appProperties",
-          });
-        }
-        break;
-      case 2:
-        console.log("Uploading both slider and visor images.");
-        await drive.files.create({
-          resource: {
-            parents: parentsSlider,
-            appProperties: appProperties,
-            name: nameSlider,
-            mimeType: mimeType
-          },
-          media: {
-            mimeType: mimeType,
-            body: fs.createReadStream(filePathSlider),
-          },
-          fields: "appProperties",
-        });
-        await drive.files.create({
-          resource: {
-            parents: parentVisor,
-            appProperties: appProperties,
-            name: nameVisor,
-            mimeType: mimeType
-          },
-          media: {
-            mimeType: mimeType,
-            body: fs.createReadStream(filePathVisor),
-          },
-          fields: "appProperties",
-        });
-        break;
-      default:
-        console.log('No images to upload...')
-    }
-
-    if (mappingFiles.has('videoFile')) {
-      await drive.files.create({
-        resource: {
-          parents: parentVideo,
-          appProperties: appProperties,
-          name: nameVideo,
-          mimeType: mimeTypeVideo
-        },
-        media: mediaVideo,
-        fields: "appProperties",
-      });
-    }
-
-    if (mappingFiles.has('audioFile')) {
-      await drive.files.create({
-        resource: {
-          parents: parentAudio,
-          appProperties: appProperties,
-          name: nameAudio,
-          mimeType: mimeTypeAudio
-        },
-        media: mediaAudio,
-        fields: "appProperties",
-      });
-    }
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-
-//--------List Posts Slider Images----------
-function imgLinks(id) {
-  var imgLink = `https://drive.google.com/uc?export=view&id=${id}`;
-  return imgLink;
-}
-
-async function createForGenerateUrl(e, index) {
-  await drive.permissions.create({
-    fileId: e.id,
-    requestBody: {
-      role: "reader",
-      type: "anyone",
-    },
-  });
-  await drive.files.get({
-    fileId: e.id,
-    fields: "webViewLink, webContentLink",
-  });
-
-  const linkimg = imgLinks(e.id)
-  const prop = e.appProperties
-  const { id, idLinkSPOTY, idLinkDRIVE, urlLinkWEB, urlLinkDOWNLOAD, categories, info, connectionId, title, genre, artist, idMedia, idLinkYT, mediaType } = prop
-  return { 
-    id, 
-    linkimg, 
-    idLinkSPOTY, 
-    idLinkDRIVE, 
-    urlLinkWEB, 
-    urlLinkDOWNLOAD, 
-    categories, 
-    info, 
-    connectionId, 
-    title, 
-    genre, 
-    artist, 
-    idMedia, 
-    idLinkYT, 
-    mediaType }
-}
-
-async function listPostImages() {
-  const list = []
-  try {
-    const response = await drive.files.list({
-      fileId: "1AHVpvZukrnEgJzwdCjDDnpUxuDob8Lbe", //slider 
-      q: `'1AHVpvZukrnEgJzwdCjDDnpUxuDob8Lbe' in parents`,
-      fields: "files(id, name, appProperties)",
-    });
-
-    const res = response.data.files.map(async (e, index) => {
-      list.push(await createForGenerateUrl(e, index));
-      return list
-    });
-    console.log('el resssssssss!!!!!')
-    return res
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-//--------Count Slider Images----------
-async function listAndCountSliderImgs() {
-  try {
-    const response = await drive.files.list({
-      fileId: "1AHVpvZukrnEgJzwdCjDDnpUxuDob8Lbe", //slider 
-      q: `'1AHVpvZukrnEgJzwdCjDDnpUxuDob8Lbe' in parents`,
-      fields: "files(appProperties)",
-    });
-    var slidersLength = response.data.files.length
-    return slidersLength
-  } catch (e) {
-    console.log(e)
-  }
-}
-
-
-//--------List Visor Images----------
-
-async function createForGenerateUrlVisor(e, index) {
-  await drive.permissions.create({
-    fileId: e.id,
-    requestBody: {
-      role: "reader",
-      type: "anyone",
-    },
-  });
-  await drive.files.get({
-    fileId: e.id,
-    fields: "webViewLink, webContentLink",
-  });
-
-  const linkimg = imgLinks(e.id)
-  const prop = e.appProperties
-  const { id, idLinkSPOTY, idLinkDRIVE, urlLinkWEB, urlLinkDOWNLOAD, categories, info, connectionId, title, genre, artist, idMedia, idLinkYT, mediaType } = prop
-  return { id, linkimg, idLinkSPOTY, idLinkDRIVE, urlLinkWEB, urlLinkDOWNLOAD, categories, info, connectionId, title, genre, artist, idMedia, idLinkYT, mediaType }
-
-}
-
-async function listPostVisorImages() {
-  const list = []
-  try {
-    const response = await drive.files.list({
-      fileId: "1XtXvvdt7wmHYNCPJ-kPLpuPOFqS70_1k", //slider 
-      q: `'1XtXvvdt7wmHYNCPJ-kPLpuPOFqS70_1k' in parents`,
-      fields: "files(id, name, appProperties)",
-    });
-
-    //const objs = response.data.files.map((e) => e)
-    const res = response.data.files.map(async (e, index) => {
-      list.push(await createForGenerateUrlVisor(e, index));
-      return list
-    });
-    return res
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-
-async function getMp3Id (id) {
-  try {
-    const audio = await drive.files.list({
-      fileId: '1-5iQClHhyavOERDhut0vhFsRg2EE14FP', //audios
-      q: `appProperties has { key='connectionId' and value='${id}' }`,
-      fields: "files(id, appProperties)",
-    });
-    console.log('el audio con sus properties: ', audio.data.files[0])
-    return audio.data.files[0]
-  }catch(err){
-    console.log(err)
-  }
-}
-
-//--------List Product Images----------
-
-async function listProdImages() {
-  try {
-    const response = await drive.files.list({
-      fileId: "1AHVpvZukrnEgJzwdCjDDnpUxuDob8Lbe", //sliders
-      q: `'1AHVpvZukrnEgJzwdCjDDnpUxuDob8Lbe' in parents`,
-      fields: "files(id, name)",
-    });
-
-    const objs = response.data.files.map((e) => e)
-
-    async function createFileToUpload(e) {
-      await drive.permissions.create({
-        fileId: e.id,
-        requestBody: {
-          role: "reader",
-          type: "anyone",
-        },
-      });
-      await drive.files.get({
-        fileId: e.id,
-        fields: "webViewLink, webContentLink",
-      });
-    }
-
-    function imgLinks(id) {
-      var imgLink = `https://drive.google.com/uc?export=view&id=${id}`;
-      console.log('el imgLink: ', imgLink)
-      return imgLink;
-    }
-    response.data.files.map(async (e) => {
-      await createFileToUpload(e);
-    });
-
-    return objs.map(o => imgLinks(o.id))
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-//--------Get Product By Name----------
-
-async function getProductByName() {
-  try {
-
-
-    const response = await drive.files.list({
-      fileId: "1hmPyVTGkRDjMgQVQJKSdNAVifNOVy2kA",
-      q: 'name = "producto1.png" and parents in "1BkJ-dQUAn_642S-dQU8ibV83r0ASs-ik"',
-    });
-    return await response.data;
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-
-///////////// LIKE /////////////////
-
-const contentLikes = {};
-
-const contentController = {}
-
-contentController.likeContent = function (req, res) {
-
-  const contentId = req.params.id;
-
-  if (!contentLikes[contentId]) {
-    contentLikes[contentId] = 0;
-  }
-
-  contentLikes[contentId] += 1;
-
-  res.status(200).send({ message: 'Me gusta agregado', likes: contentLikes[contentId] });
-}
-
-///////////////////////////////////
-
-
-const updateImageAndMeta = async (result, mappingImages, mappingFiles) => {
-  const filePathSlider = mappingImages.get('imageSlider') !== null ? path.join(os.tmpdir(), `slider-image-${mappingImages.get('imageSlider')}`) : null;
-  const filePathVisor = mappingImages.get('imageVisor') !== null ? path.join(os.tmpdir(), `visor-image-${mappingImages.get('imageVisor')}`) : null;
-  const filePathAudio = mappingFiles.has('audioFile') ? path.join(os.tmpdir(), `audio-file-${mappingFiles.get('audioFile')}`) : null;
-  const filePathVideo = mappingFiles.has('videoFile') ? path.join(os.tmpdir(), `video-file-${mappingFiles.get('videoFile')}`) : null;
-  
-  const connectionId = `${result.get('connectionId')}`
-
-  let appProperties = {
-      'id': result.get('id'),
-      'artist': result.get('artist'),
-      'title': result.get('title'),
-      'info': result.get('info'),
-      'connectionId': connectionId,
-      'idLinkYT': result.get('idLinkYT'),
-      'idLinkSPOTY': result.get('idLinkSPOTY'),
-      'idLinkDRIVE': result.get('idLinkDRIVE'),
-      'urlLinkWEB': result.get('urlLinkWEB'),
-      'urlLinkDOWNLOAD': result.get('urlLinkDOWNLOAD'),
-      'idMedia': {},
-      'mediaType': result.get('mediaType'),
-      'categories': result.get('categories'),
-      'genre': result.get('genre')
-  }
-
-  let parentsSlider = ['1AHVpvZukrnEgJzwdCjDDnpUxuDob8Lbe']
-  let parentVisor = ['1XtXvvdt7wmHYNCPJ-kPLpuPOFqS70_1k']
-  let parentAudio = ['1-5iQClHhyavOERDhut0vhFsRg2EE14FP']
-  let parentVideo = ['1-9w68xsizndeGlLDiWrPznFfwQReAGgx']
-
-  let nameSlider = mappingImages.get('imageSlider') //file name
-  let nameVisor = mappingImages.get('imageVisor') //file name
-  let nameAudio = mappingFiles.get('audioFile') //file name
-  let nameVideo = mappingFiles.get('videoFile') //file name
-
-  let mimeType = "image/jpg"
-  let mimeTypeAudio = "audio/mpeg"
-  let mimeTypeVideo = "video/mp4"
-
-  try {
-    await drive.files.update({
-      fileId: `${result.get('idFileSlider')}`,
-      resource: fileMetadataSlider,
-      fields: 'appProperties'
-    })
-    await drive.files.update({
-      fileId: `${result.get('idFileVisor')}`,
-      resource: fileMetadataVisor,
-      fields: 'appProperties'
-    })
-    if(result.get('idAudioFile')){
-      await drive.files.update({
-        fileId: `${result.get('idAudioFile')}`,
-        resource: {
-          parents: parentAudio,
-          appProperties: appProperties,
-          name: nameAudio,
-          mimeType: mimeType
-        },
-        fields: 'appProperties'
-      })
-    }
-    if(result.get('idVideoFile')){
-      await drive.files.update({
-        fileId: `${result.get('idVideoFile')}`,
-        resource: {
-          parents: parentVideo,
-          appProperties: appProperties,
-          name: nameVideo,
-          mimeType: mimeType
-        },
-        fields: 'appProperties'
-      })
-    }
-    console.log('Successfully updated appProperties!')
-  } catch (error) {
-    console.log(error)
-  }
-
-  try {
-    switch (mappingImages.size) {
-      case 1:
-        // Check if the first image is the slider or visor
-        if (mappingImages.has("imageSlider")) {
-          console.log("Updating slider image only.");
-          let mediaSlider = {
-            mimeType: "image/jpg",
-            body: fs.createReadStream(filePathSlider),
-          };
-          await drive.files.update({
-            fileId: `${result.get('idFileSlider')}`,
-            media: mediaSlider
-          })
-        } else if (mappingImages.has("imageVisor")) {
-          console.log("Updating visor image only.");
-          let mediaVisor = {
-            mimeType: "image/jpg",
-            body: fs.createReadStream(filePathVisor),
-          };
-          await drive.files.update({
-            fileId: `${result.get('idFileVisor')}`,
-            media: mediaVisor
-          })
-        }
-        break;
-      case 2:
-        console.log("Updating both slider and visor images.");
-        let mediaSlider = {
-          mimeType: "image/jpg",
-          body: fs.createReadStream(filePathSlider),
-        };
-        await drive.files.update({
-          fileId: `${result.get('idFileSlider')}`,
-          media: mediaSlider
-        })
-        let mediaVisor = {
-          mimeType: "image/jpg",
-          body: fs.createReadStream(filePathVisor),
-        };
-        await drive.files.update({
-          fileId: `${result.get('idFileVisor')}`,
-          media: mediaVisor
-        })
-        break;
-      default:
-        console.log('No images to update...')
-    }
-
-
-    if (mappingFiles.has('videoFile')) {
-      console.log('updating video file!')
-      let mediaVideo = {
-        mimeType: "image/jpg",
-        body: fs.createReadStream(filePathVideo),
-      };
-      await drive.files.update({
-        fileId: `${result.get('idVideoFile')}`,
-        media: mediaVideo
-      });
-    }
-
-    if (mappingFiles.has('audioFile')) {
-      console.log('updating audio file!')
-      let mediaAudio = {
-        mimeType: "image/jpg",
-        body: fs.createReadStream(filePathAudio),
-      };
-      await drive.files.create({
-        fileId: `${result.get('idAudioFile')}`,
-        media: mediaAudio
-      });
-    }
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-
-const getEditMedia = async (req) => {
-  const { id } = req.params
-  try {
-    const listSlider = await drive.files.list({
-      fileId: "1AHVpvZukrnEgJzwdCjDDnpUxuDob8Lbe",
-      q: `appProperties has { key='connectionId' and value='${id}' }`,
-      fields: 'files(id, name, appProperties)'
-    })
-    const listVisor = await drive.files.list({
-      fileId: "1XtXvvdt7wmHYNCPJ-kPLpuPOFqS70_1k",
-      q: `appProperties has { key='connectionId' and value='${id}' }`,
-      fields: 'files(id, name, appProperties)'
-    })
-    const imgLinkIdSlider = listSlider.data?.files[0].id
-    const imgLinkIdVisor = listSlider.data?.files[1].id
-    const imgLinkIdAudio = listSlider.data?.files[2].id
-    const imgLinkIdVideo = listSlider.data.files[3] && listSlider.data.files[3].id;
-
-    const imgLinkSlider = `https://drive.google.com/uc?export=view&id=${imgLinkIdSlider}`;
-    const imgLinkVisor = `https://drive.google.com/uc?export=view&id=${imgLinkIdVisor}`;
-   
-    listSlider.data.files[0].appProperties.imgLink = imgLinkSlider;
-    listSlider.data.files[1].appProperties.idFileSlider = imgLinkIdSlider;
-    listSlider.data.files[1].appProperties.imgLink = imgLinkVisor;
-    listSlider.data.files[1].appProperties.idFileVisor = imgLinkIdVisor;
-    listSlider.data.files[2].appProperties.idAudioFile = imgLinkIdAudio ? imgLinkIdAudio : null;
-    if(listSlider.data.files[3]){
-      listSlider.data.files[3].appProperties.idVideoFile = imgLinkIdVideo
-    } 
-
-    
-    console.log('la response . data ', listSlider.data.files)
-    return { files: listSlider.data.files };
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-module.exports = {
+const os = require("os");
+const busboy = require("busboy");
+const { User } = require("../models/User.js");
+const {
   uploadFile,
-  createFile,
-  getProductByName,
-  listProdImages,
   listPostImages,
-  listPostVisorImages,
-  getMp3Id,
   contentController,
   getEditMedia,
-  updateImageAndMeta,
-  listPostVisorImages
+  listPostVisorImages,
+  updateImageAndMeta
+} = require("../helpers/media.js");
+const sgMail = require('@sendgrid/mail');
+const { sendgridApi } = require("../config/index.js");
+
+//------ GET ALL IMAGES(SLIDERS & VISOR) -------
+
+router.get("/getall", async (req, res) => {
+  try {
+    //slider
+    const responsesSlider = await listPostImages();
+    const resolvedResponsesSlider = await Promise.all(responsesSlider);
+    const flattenResponsesSlider = Array.prototype.concat.apply([], resolvedResponsesSlider);
+    const uniqueResponsesSlider = Array.from(new Set(flattenResponsesSlider));
+    //visor
+    const responsesVisor = await listPostVisorImages();
+    const resolvedResponsesVisor = await Promise.all(responsesVisor);
+    const flattenResponsesVisor = Array.prototype.concat.apply([], resolvedResponsesVisor);
+    const uniqueResponsesVisor = Array.from(new Set(flattenResponsesVisor));
+    return res.status(200).json({ slider: uniqueResponsesSlider, visor: uniqueResponsesVisor });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send(error);
+  }
+})
+
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  // try{
+  //   const responses = await listPostImages();
+  //   Promise.all(await responses.at(0)).then(response=>{
+  //     const resp = response.filter(e => e.id === id)
+  //     return res.status(200).json(resp)})
+  // } catch (error) {
+  //     console.log(error);
+  // }
+  try {
+    const responses = await listPostImages()
+    const resolvedResponses = await Promise.all(responses)
+    const flattenResponses = Array.prototype.concat.apply([], resolvedResponses)
+    const uniqueResponses = Array.from(new Set(flattenResponses));
+    const resp = uniqueResponses.filter(obj => obj.id === id)
+    return res.status(200).json(resp)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).send(error)
+  }
+})
+
+////////// LIKE //////////////
+
+
+router.post('/:id/like', contentController.likeContent);
+
+
+//////////////////////////////
+
+//----------- UPLOAD IMAGE ---------
+
+const uploadImage = async (mapping, mappingImages, mappingFiles, res) => {
+  try {
+    if (mappingImages.get('imageSlider') === null) {
+      mappingImages.delete('imageSlider')
+    }
+    if (mappingImages.get('imageVisor') === null) {
+      mappingImages.delete('imageVisor')
+    }
+    if (mappingFiles.get('audioFile') === null) {
+      mappingFiles.delete('audioFile')
+    }
+    if (mappingFiles.get('videoFile') === null) {
+      mappingFiles.delete('videoFile')
+    }
+    const response = await uploadFile(mapping, mappingImages, mappingFiles);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ error: "Error al subir la imagen" });
+  } 
+}
+
+const uploadImageTemp = async (req, res) => {
+  var mapping = new Map()
+  var mappingImages = new Map()
+  var mappingFiles = new Map()
+
+  const bb = busboy({ headers: req.headers });
+
+  bb.on("file", (fieldName, file, info) => {
+    if (file) {
+      if (fieldName === "imageSlider") {
+        console.log("image slider: ", info.filename);
+        mappingImages.set("imageSlider", info.filename);
+        const saveTo = path.join(os.tmpdir(), `slider-image-${info.filename}`);
+        file.pipe(fs.createWriteStream(saveTo));
+      } else if (fieldName === "imageVisor") {
+        console.log("image visor: ", info.filename);
+        mappingImages.set("imageVisor", info.filename);
+        const saveTo = path.join(os.tmpdir(), `visor-image-${info.filename}`);
+        file.pipe(fs.createWriteStream(saveTo));
+      } else if (fieldName === "audioFile") {
+        console.log("audio file: ", info.filename);
+        mappingFiles.set("audioFile", info.filename);
+        const saveTo = path.join(os.tmpdir(), `audio-file-${info.filename}`);
+        file.pipe(fs.createWriteStream(saveTo));
+      } else if (fieldName === "videoFile") {
+        console.log("video file: ", info.filename);
+        mappingFiles.set("videoFile", info.filename);
+        const saveTo = path.join(os.tmpdir(), `video-file-${info.filename}`);
+        file.pipe(fs.createWriteStream(saveTo));
+      }
+    } else if (fieldName === 'imageSlider') {
+      console.log("No image slider being uploaded.");
+      mappingImages.set("imageSlider", null);
+    } else if (fieldName === 'imageVisor') {
+      console.log("No image visor being uploaded.");
+      mappingImages.set("imageVisor", null);
+    } else if (fieldName === 'audioFile') {
+      console.log("No audio file being uploaded.");
+      mappingFiles.set("audioFile", null);
+    } else if (fieldName === 'videoFile') {
+      console.log("No video file being uploaded.");
+      mappingFiles.set("videoFile", null);
+    }
+  });
+
+  bb.on("field", (name, val) => {
+    console.log(name, val)
+    mapping.set(name, val);
+  });
+  bb.on("close", () => {
+    console.log("Done uploading!")
+    uploadImage(mapping, mappingImages, mappingFiles, res)
+    sgMail.setApiKey(sendgridApi);
+    getEmails()
+  });
+
+  req.pipe(bb);
+}
+///////////////// CODIGO PARA ENVIAR CORREO (NUEVA MEDIA)///////////////////
+
+async function getEmails() {
+  try {
+    const usersEmails = await User.findAll({
+      attributes: ['email']
+    });
+    usersEmails.forEach(email => {
+      const msgNewPost = {
+        to: email,
+        from: 'terminalkillerproject@gmail.com',
+        subject: 'La Ruina TV ha publicado algo nuevo',
+        html: '<p>¡Hola! hemos lanzado una nueva cancion, ven y échale un vistazo: </p>',
+      };
+      sgMail.send(msgNewPost);
+    })
+  } catch (e) {
+    console.log(e)
+  };
+}
+
+router.post("/upload", async (req, res) => {
+  uploadImageTemp(req, res);
+});
+
+router.get('/edit/:id', async (req, res) => {
+  try {
+    const response = await getEditMedia(req)
+    return res.status(200).json(response)
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+// const updateImage = async (mapping, res) => {
+//   try {
+//     const response = await updateImageAndMeta(
+//       mapping
+//     );
+//     return res.status(200).json(response);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }
+
+// const UpdateImageMeta = async (req, res) => {
+//   var mapping = new Map()
+//   const bb = busboy({ headers: req.headers });
+//   bb.on("file", (name, file, info) => {
+//     if(file){
+//       const { filename, encoding, mimeType } = info;
+
+//       console.log(
+//         `File [${name}]: filename: %j, encoding: %j, mimeType: %j`,
+//         filename,
+//         encoding,
+//         mimeType
+//       );
+//       if(name === 'imageSlider'){
+//         console.log('image slider: ', filename)
+//         mapping.set('imageSlider', filename)
+//         const saveTo = path.join(os.tmpdir(), `slider-image-${filename}`);
+//         file.pipe(fs.createWriteStream(saveTo));
+//       }else if(name === 'imageVisor'){
+//         console.log('image visor: ', filename)
+//         if(filename === null){
+//           mapping.set('imageVisor', null)
+//           return
+//         }
+//         mapping.set('imageVisor', filename)
+//         const saveTo = path.join(os.tmpdir(), `visor-image-${filename}`);
+//         file.pipe(fs.createWriteStream(saveTo));
+//       }
+//     }else{
+//       mapping.set('imageVisor', 'same')
+//       mapping.set('imageSlider', 'same')
+//     }
+//   });
+//   bb.on("field", (name, val) => {
+//       mapping.set(name, val)
+//   });
+//   bb.on("close", () => {
+//     console.log("Done uploading!")
+//     updateImage(mapping, res)
+//   });
+
+//   req.pipe(bb);
+// }
+
+const updateImage = async (mapping, mappingImages, mappingFiles, res) => {
+
+  try {
+    const response = await updateImageAndMeta(mapping, mappingImages, mappingFiles);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+  }
 };
+
+const updateImageMeta = async (req, res) => {
+  var mapping = new Map();
+  var mappingImages = new Map();
+  var mappingFiles = new Map();
+  const bb = busboy({ headers: req.headers });
+
+  bb.on("file", (name, file, info) => {
+    if (file) {
+      if (name === "imageSlider") {
+        console.log("image slider: ", info.filename);
+        mappingImages.set("imageSlider", info.filename);
+        const saveTo = path.join(os.tmpdir(), `slider-image-${info.filename}`);
+        file.pipe(fs.createWriteStream(saveTo));
+      } else if (name === "imageVisor") {
+        console.log("image visor: ", info.filename);
+        mappingImages.set("imageVisor", info.filename);
+        const saveTo = path.join(os.tmpdir(), `visor-image-${info.filename}`);
+        file.pipe(fs.createWriteStream(saveTo));
+      } else if (name === "audioFile") {
+        console.log("audio file: ", info.filename);
+        mappingFiles.set("audioFile", info.filename);
+        const saveTo = path.join(os.tmpdir(), `audio-file-${info.filename}`);
+        file.pipe(fs.createWriteStream(saveTo));
+      } else if (name === "videoFile") {
+        console.log("video file: ", info.filename);
+        mappingFiles.set("videoFile", info.filename);
+        const saveTo = path.join(os.tmpdir(), `video-file-${info.filename}`);
+        file.pipe(fs.createWriteStream(saveTo));
+      }
+    } else if (name === 'imageSlider') {
+      console.log("No image slider being uploaded.");
+      mappingImages.set("imageSlider", "same");
+    } else if (name === 'imageVisor') {
+      console.log("No image visor being uploaded.");
+      mappingImages.set("imageVisor", "same");
+    } else if (name === 'audioFile') {
+      console.log("No audio file being uploaded.");
+      mappingFiles.set("audioFile", "same");
+    } else if (name === 'videoFile') {
+      console.log("No video file being uploaded.");
+      mappingFiles.set("videoFile", null);
+    }
+  });
+
+  bb.on("field", (name, val) => {
+    if (val === "" || val) {
+      mapping.set(name, val);
+    }
+  });
+  bb.on("close", () => {
+    console.log("Done uploading!");
+    updateImage(mapping, mappingImages, mappingFiles, res);
+  });
+
+  req.pipe(bb);
+};
+
+router.post('/edit', async (req, res) => {
+  updateImageMeta(req, res)
+})
+
+router.get("/search/s", async (req, res) => {
+  const { name } = req.query
+  if (!name) return res.end()
+  console.log('LAAAA REEEEQQQ QUERYYYYYYYYYYYYYYYYYYYY', name)
+  try {
+    const responses = await listPostImages()
+    const resolvedResponses = await Promise.all(responses)
+    const flattenResponses = Array.prototype.concat.apply([], resolvedResponses)
+    const uniqueResponses = Array.from(new Set(flattenResponses));
+    const resp = uniqueResponses.filter(obj =>
+      obj.title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").includes(name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "")) ||
+      obj.artist.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").includes(name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ""))
+    )
+    return res.status(200).json(resp ? resp : 'No existen titulos con ese nombre')
+  } catch (error) {
+    console.log(error);
+  }
+}
+)
+
+module.exports = router;

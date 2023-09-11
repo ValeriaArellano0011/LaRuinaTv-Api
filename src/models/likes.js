@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-const { sequelize } = require('../db.js');
+const { sequelize } = require('../integrations/postgreSQL');
 const { User } = require('./User.js')
 
 const Likes = sequelize.define('likes', {

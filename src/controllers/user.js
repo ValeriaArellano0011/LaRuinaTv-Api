@@ -1,6 +1,4 @@
-require('dotenv').config();
-const { aliasTest, emailTest, passwordTest} = process.env
-
+const { aliasTest, emailTest, passwordTest } = require("../config")
 const express = require('express')
 const server = express.Router()
 

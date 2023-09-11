@@ -1,28 +1,19 @@
 const router = require('express').Router();
-const user = require('./user.js');
-const users = require('./users.js');
-//const auth = require('./auth');
-const media = require('./media');
-const product = require('./product');
-const mercadopago = require("./mercadopago")
-const playlist = require("./playlist")
-const likes = require("./likes")
-const yt = require('./yt')
-const wogTales = require('./app/wog/tales')
-const wogAdventures = require('./app/wog/adventures')
 
+const auth = require('../controllers/auth');
+const user = require('../controllers/user.js');
+const users = require('../controllers/users.js');
+const media = require('../controllers/media');
+const mercadopago = require("../integrations/mercadopago.js")
+const likes = require("../controllers/likes")
+const yt = require('../controllers/yt')
+
+router.use("/auth", auth);
 router.use('/user', user);
 router.use('/users', users);
-//router.use("/auth", auth);
+router.use('/yt', yt);
 router.use("/media", media);
-router.use("/product", product)
-router.use("/mercadopago", mercadopago)
-router.use("/playlist", playlist)
-router.use('/yt', yt)
-router.use("/likes", likes)
+router.use("/likes", likes);
+router.use("/mercadopago", mercadopago);
 
-//World of Gwerh
-router.use("/wog/tales", wogTales)
-router.use("/wog/adventures", wogAdventures)
-
-module.exports =  router
+module.exports =  router;

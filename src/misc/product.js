@@ -1,4 +1,4 @@
-const {getUrlFileById} = require("../Functions/googleapis/index")
+const {getUrlFileById} = require("../integrations/google")
 
 const DB_LARUINATV_PRODUCTS = [
     {

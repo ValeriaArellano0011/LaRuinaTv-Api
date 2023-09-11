@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const request = require("request");
-const { updateUserPlan, getUserPlan } = require("../controllers/users.js");
+const { updateUserPlan, getUserPlan } = require("./sendgrid.js");
 
 router.post("/create-checkout", async (req, res) => {
   const options = {

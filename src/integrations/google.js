@@ -1,4 +1,3 @@
-require('dotenv').config();
 const { POST_CLIENT_ID, POST_CLIENT_SECRET, REDIRECT_URI, REFRESH_TOKEN, API_KEY } = process.env;
 const { google } = require('googleapis');
 
