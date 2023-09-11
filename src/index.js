@@ -1,11 +1,12 @@
 require("dotenv").config();
 const server = require('./app');
-const { port } = require("./config");
+const { port, environment } = require("./config");
 const { sequelize } = require("./integrations/postgreSQL");
 
 async function main() {
+  console.log(environment)
   try {
-    await sequelize.sync({force: true});
+    await sequelize.sync();
     console.log("succesfully connected");
     server.listen(port, ()=> console.log(`server listening on port ${port}`))
   } catch (error) {

@@ -13,7 +13,7 @@ router.use('/user', user);
 router.use('/users', users);
 router.use('/yt', yt);
 router.use("/media", media);
-/* router.use("/likes", likes); */
+router.use("/likes", likes);
 router.use("/mercadopago", mercadopago);
 
 module.exports =  router;

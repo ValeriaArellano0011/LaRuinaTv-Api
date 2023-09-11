@@ -15,7 +15,6 @@ oauth2Client.setCredentials({ refresh_token: refreshToken});
 async function refreshAccessToken() {
   try {
       const token = await oauth2Client.refreshAccessToken();
-      console.log(token)
       oauth2Client.setCredentials({refresh_token: token.credentials.refresh_token});
       return token.credentials.refresh_token
   } catch (error) {
