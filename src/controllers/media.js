@@ -7,9 +7,9 @@ const busboy = require("busboy");
 const { User } = require("../models/User.js");
 const {
   uploadFile,
-  listPostImages,
+  listSliderImages,
   getEditMedia,
-  listPostVisorImages,
+  listVisorImages,
   updateImageAndMeta
 } = require("../helpers/media.js");
 const sgMail = require('@sendgrid/mail');
@@ -19,8 +19,17 @@ const { sendgridApi } = require("../config/index.js");
 
 router.get("/getall", async (req, res) => {
   try {
-
-    return res.status(200).json("asd");
+    //slider
+    const responsesSlider = await listSliderImages();
+    const resolvedResponsesSlider = await Promise.all(responsesSlider);
+    const flattenResponsesSlider = Array.prototype.concat.apply([], resolvedResponsesSlider);
+    const uniqueResponsesSlider = Array.from(new Set(flattenResponsesSlider));
+    //visor
+    const responsesVisor = await listVisorImages();
+    const resolvedResponsesVisor = await Promise.all(responsesVisor);
+    const flattenResponsesVisor = Array.prototype.concat.apply([], resolvedResponsesVisor);
+    const uniqueResponsesVisor = Array.from(new Set(flattenResponsesVisor));
+    return res.status(200).json({ slider: uniqueResponsesSlider, visor: uniqueResponsesVisor });
   } catch (error) {
     console.log(error);
     return res.status(500).send("error");
@@ -30,7 +39,7 @@ router.get("/getall", async (req, res) => {
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
   // try{
-  //   const responses = await listPostImages();
+  //   const responses = await listSliderImages();
   //   Promise.all(await responses.at(0)).then(response=>{
   //     const resp = response.filter(e => e.id === id)
   //     return res.status(200).json(resp)})
@@ -38,7 +47,7 @@ router.get("/:id", async (req, res) => {
   //     console.log(error);
   // }
   try {
-    const responses = await listPostImages()
+    const responses = await listSliderImages()
     const resolvedResponses = await Promise.all(responses)
     const flattenResponses = Array.prototype.concat.apply([], resolvedResponses)
     const uniqueResponses = Array.from(new Set(flattenResponses));
@@ -242,7 +251,7 @@ router.get("/search/s", async (req, res) => {
   if (!name) return res.end()
   console.log('LAAAA REEEEQQQ QUERYYYYYYYYYYYYYYYYYYYY', name)
   try {
-    const responses = await listPostImages()
+    const responses = await listSliderImages()
     const resolvedResponses = await Promise.all(responses)
     const flattenResponses = Array.prototype.concat.apply([], resolvedResponses)
     const uniqueResponses = Array.from(new Set(flattenResponses));

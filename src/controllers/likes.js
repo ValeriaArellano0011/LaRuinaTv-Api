@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const { Likes } = require("../models/Likes.js");
-const { listPostVisorImages, listPostImages } = require('../helpers/media.js');
+const { listVisorImages, listSliderImages } = require('../helpers/media.js');
 
 router.post("/add", async (req, res) => {
     try {
@@ -50,7 +50,7 @@ router.post("/getAll", async (req, res) => {
         console.log(allLikes)
         if (allLikes.length) {
             //visor
-            const responsesVisor = await listPostVisorImages()
+            const responsesVisor = await listVisorImages()
             const resolvedResponsesVisor = await Promise.all(responsesVisor)
             const flattenResponsesVisor = Array.prototype.concat.apply([], resolvedResponsesVisor)
             const uniqueResponsesVisor = Array.from(new Set(flattenResponsesVisor));

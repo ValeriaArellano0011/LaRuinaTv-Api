@@ -2,11 +2,11 @@ const { google } = require("googleapis");
 const fs = require("fs");
 const os = require('os');
 const path = require("path");
-const { refreshToken, idSliderFolder } = require("../config");
+const { refreshToken, idSliderFolder, idVisorFolder, mediaClientId, mediaClientSecret } = require("../config");
 
 const oauth2Client = new google.auth.OAuth2(
-  '874900879874-5hn8fcdnj01vckdokqr9a6b6fgvo8mkh.apps.googleusercontent.com',
-  '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',
+  mediaClientId,
+  mediaClientSecret,
   'https://developers.google.com/oauthplayground'
 );
 
@@ -58,14 +58,6 @@ const createFile = async () => {
   }
 };
 
-//----------LIST AUDIO IDs------------
-
-const getAudioIds = () => {
-  let audioFolder = '1-5iQClHhyavOERDhut0vhFsRg2EE14FP'
-
-
-}
-
 //--------Upload File----------
 
 async function uploadFile(result, mappingImages, mappingFiles) {
@@ -77,8 +69,8 @@ async function uploadFile(result, mappingImages, mappingFiles) {
   const lengthSliders = await listAndCountSliderImgs()
   const connectionId = `${result.get('title')}${lengthSliders}`
 
-  let parentsSlider = ['1AHVpvZukrnEgJzwdCjDDnpUxuDob8Lbe']
-  let parentVisor = ['1XtXvvdt7wmHYNCPJ-kPLpuPOFqS70_1k']
+  let parentsSlider = [idSliderFolder]
+  let parentVisor = [idVisorFolder]
   let parentAudio = ['1-5iQClHhyavOERDhut0vhFsRg2EE14FP']
   let parentVideo = ['1-9w68xsizndeGlLDiWrPznFfwQReAGgx']
   let appProperties = {
@@ -133,7 +125,6 @@ async function uploadFile(result, mappingImages, mappingFiles) {
       body: fs.createReadStream(filePathVideo),
     };
   }
-
 
   try {
     switch (mappingImages.size) {
@@ -301,7 +292,7 @@ async function createForGenerateUrl(e, index) {
     mediaType }
 }
 
-async function listPostImages() {
+async function listSliderImages() {
   const list = []
   try {
     const response = await drive.files.list({
@@ -359,12 +350,12 @@ async function createForGenerateUrlVisor(e, index) {
 
 }
 
-async function listPostVisorImages() {
+async function listVisorImages() {
   const list = []
   try {
     const response = await drive.files.list({
-      fileId: idSliderFolder, //slider 
-      q: `${idSliderFolder} in parents`,
+      fileId: idVisorFolder, //slider 
+      q: `${idVisorFolder} in parents`,
       fields: "files(id, name, appProperties)",
     });
 
@@ -657,10 +648,10 @@ module.exports = {
   uploadFile,
   createFile,
   listProdImages,
-  listPostImages,
-  listPostVisorImages,
+  listSliderImages,
+  listVisorImages,
   getMp3Id,
   getEditMedia,
   updateImageAndMeta,
-  listPostVisorImages
+  listVisorImages
 };
