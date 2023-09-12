@@ -1,44 +1,39 @@
-require('./passport');
-const cookieSession = require('cookie-session');
-const express = require('express');
+const express = require("express");
 const server = express();
-const routes = require('./routes/index.js');
-const passport = require('passport');
+const routes = require("./routes");
 
-server.use(cookieSession({
-    name: 'google-auth-session',
-    keys: ['key1', 'key2'],
-    debug: true
+const morgan = require("morgan");
+const session = require("express-session");
+
+const bodyParser = require("body-parser");
+const passport = require("passport");
+const { privateSecret } = require("./config");
+
+server.use((req, res, next) => {
+  console.log('request from:', req.headers.origin);
+  console.log('method:', req.method);
+  console.log('route:', req.url);
+
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Origin');
+
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
+server.use(session({
+  secret: privateSecret,
+  resave: false,
+  saveUninitialized: false
 }));
 
-server.use(function (request, response, next) {
-    if (request.session && !request.session.regenerate) {
-        request.session.regenerate = (cb) => {
-            cb();
-        }
-    }
-    if (request.session && !request.session.save) {
-        request.session.save = (cb) => {
-            cb();
-        }
-    }
-    next()
-})
 server.use(passport.initialize());
+server.use(bodyParser.json());
 server.use(passport.session());
-
-server.use((req, res, next)=>{
-    console.log(req.originalUrl)
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested, Content-Type, Accept');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-    next();
-});
-
-server.use(express.json())
-server.use(express.urlencoded({ extended: true }));
-
+server.use(morgan('dev'));
 server.use('/', routes);
 
 module.exports = server;

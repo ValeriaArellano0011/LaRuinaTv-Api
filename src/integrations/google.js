@@ -1,39 +1,65 @@
-const { google } = require('googleapis');
-const { refreshToken, mediaClientId, mediaClientSecret, redirectUri } = require('../config');
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const { authClientId, authClientSecret, apiUrl } = require("../config/");
 
-const oauth2Client = new google.auth.OAuth2(
-  mediaClientId,
-  mediaClientSecret,
-  redirectUri)
+const loginGoogle = new GoogleStrategy(
+  {
+    clientID: authClientId,
+    clientSecret: authClientSecret,
+    callbackURL: `${apiUrl}/auth/user/google/login/callback`,
+    scope: [
+      'email',
+      'profile',
+      'https://www.googleapis.com/auth/userinfo.email',
+      'https://www.googleapis.com/auth/userinfo.profile',
+      'https://www.googleapis.com/auth/plus.me'
+    ],
+    accessType: 'offline'
+  }, function (accessToken, refreshToken, profile, done) {
+    process.nextTick(async function () {
+      try {
+        const googleData = {
+          name: profile.displayName,
+          email: profile.emails[0].value,
+          photo: profile.photos[0].value,
+          accessToken: accessToken,
+        }
+        return done(null, googleData);
+      } catch (err) {
+        return done(err);
+      }
+    });
+});
 
-oauth2Client.setCredentials({refresh_token: refreshToken})
-
-const drive = google.drive({
-  version: 'v3',
-  auth: oauth2Client
-})
-
-async function getFolderFiles(idFolder){
-  var query = "'" + idFolder + "' in parents"
-  try {
-    const res = await drive.files.list(
-      {
-        q: query,
-        fields: 'files(id, name)',
-      });
-    return res.data.files;
-    
-  } catch (error) {
-    console.log(error.message)
-  }
-}
-
-async function getUrlFileById(id){
-  return `https://drive.google.com/uc?export=view&id=${id}`
-}
-
+const signupGoogle = new GoogleStrategy(
+  {
+    clientID: authClientId,
+    clientSecret: authClientSecret,
+    callbackURL: `${apiUrl}/auth/user/google/login/callback`,
+    scope: [
+      'email',
+      'profile',
+      'https://www.googleapis.com/auth/userinfo.email',
+      'https://www.googleapis.com/auth/userinfo.profile',
+      'https://www.googleapis.com/auth/plus.me'
+    ],
+    accessType: 'offline'
+  }, function (accessToken, refreshToken, profile, done) {
+    process.nextTick(async function () {
+      try {
+        const userData = {
+          name: profile.displayName,
+          email: profile.emails[0].value,
+          photo: profile.photos[0].value,
+          accessToken: accessToken,
+        }
+        return done(null, userData);
+      } catch (err) {
+        return done(err);
+      }
+    });
+});
 
 module.exports = {
-  getFolderFiles,
-  getUrlFileById
-}
+  loginGoogle,
+  signupGoogle,
+};

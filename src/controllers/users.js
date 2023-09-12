@@ -29,20 +29,6 @@ router.post("/loginwithgoogle", async (req, res) => {
   }
 });
 
-router.get('/verify-email/:token', (req, res) => {
-  const token = req.params.token;
-  const url = 'https://tv.laruinarecords.cl'
-  try {
-    const response = verifyEmail(token)
-    if(response){
-      return res.status(200).redirect(`${url}/mercadopago/plan/verify?message=verified`);
-    }
-  } catch (error) {
-    console.log(error)
-    return res.status(400).redirect(`${url}/mercadopago/plan/verify?message=notverified`);
-  }
-});
-
 router.delete("/delete-account/:id", (req, res) => {
   const id = req.params.id;
   const email = req.body.email;
@@ -59,10 +45,9 @@ router.delete("/delete-account/:id", (req, res) => {
     if (!account) {
       return res.status(401).json({ msg: "No autorizado" });
     }
-    account
-    .destroy()
-      .then(() => res.json({ msg: "Cuenta eliminada con éxito" }))
-      .catch(() => res.status(500).json({ msg: "Error del Servidor" }));
+    account.destroy()
+           .then(() => res.json({ msg: "Cuenta eliminada con éxito" }))
+           .catch(() => res.status(500).json({ msg: "Error del Servidor" }));
   })
 });
 

@@ -1,60 +1,32 @@
 const router = require('express').Router();
-const passport = require('passport');
+const { decodeToken } = require('../integrations/jwt');
+const { message } = require('../messages');
 const { User } = require('../models/User');
 
-router.get('/laruina/tv/callback/success', async (req, res) => {
-  const referer = 'https://tv.laruinarecords.cl';
+router.get("/", async(req, res) => {
+  try {
+    const userToken = req.headers.authorization;
+    const decodedToken = await decodeToken(userToken);
+    const user = await User.findByPk(decodedToken.data.id);
+    
+    if(!user) return res.status(404).send({ logged: false, message: message.user.notfound });
+    
+    const userData = {
+      id: user.dataValues.id,
+      username: user.dataValues.username,
+      email: user.dataValues.email,
+      isVerified: user.dataValues.isVerified,
+      role: user.dataValues.role,
+      profilePic: user.dataValues.profilePic || user.dataValues.googlePic
+    }
 
-  if (!req.user) {
-      res.redirect(`${referer}/auth/callback/failure`);
+    return res.status(200).send({ logged: true, userData });
+    
+  } catch (error) {
+    return res.status(500).send({ error: message.user.error })
   }
-  const accessToken = req.user.accessToken;
-  const existingUser = await User.findOne({
-      where: { email: req.user.emails[0].value }
-  });
-  
-  if (existingUser) {
-      await User.update(
-          { token: req.user.accessToken },
-          { where: { email: req.user.emails[0].value, } }
-      )
-      return res.redirect(`${referer}/auth?token=${accessToken}`)
-  }
-  await User.create({
-      alias: req.user.name.givenName,
-      email: req.user.emails[0].value,
-      googleId: req.user.id,
-      method: 'google',
-      isVerified: true,
-      token: req.user.accessToken,
-      role: req.user.emails[0].value === 'valearellano14@gmail.com' || req.user.emails[0].value ===  'terminalkillerproject@gmail.com' ||req.user.emails[0].value === 'lalofreak.jsx@gmail.com' || req.user.emails[0].value === 'lalofreak.dev@gmail.com' ? JSON.stringify({ role: 'admin', userMode: 'admin' }) : JSON.stringify({ role: 'common_user', userMode: 'free' }),
-      googlePic: req.user.photos[0].value,
-  });
-  return res.redirect(`${referer}/auth?token=${accessToken}`)
+
+
 });
-
-
-router.get('/callback/failure', (req, res) => {
-  res.send("Error");
-});
-
-router.get('/', passport.authenticate('google', {
-  scope: [
-    'email',
-    'profile', 
-    'https://www.googleapis.com/auth/userinfo.email', 
-    'https://www.googleapis.com/auth/userinfo.profile', 
-    'https://www.googleapis.com/auth/plus.me'
-  ],
-  accessType: 'offline'
-}));
-
-router.get('/google/callback',
-  passport.authenticate('google', {
-      successRedirect: `/auth/laruina/tv/callback/success`,
-      failureRedirect: '/auth/callback/failure'
-  })
-);
-
 
 module.exports = router;
