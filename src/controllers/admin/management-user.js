@@ -23,8 +23,8 @@ router.post("/create", async (req, res) => {
 
     const salt = await bcrypt.genSalt();
     userData.password = await bcrypt.hash(password, salt);
-    const user = new User(userData)
-    await user.save();
+
+    await User.create(userData);
     return res.status(200).json({ message: message.admin.createuser.success });
   } catch (error) {
     return res.status(500).send({ error : message.admin.createuser.error });
