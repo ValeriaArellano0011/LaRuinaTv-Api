@@ -11,7 +11,7 @@ router.post('/', async (req, res) => {
     const existingUser = await User.findOne({ where: { email: user.email } });
     
     if(existingUser) {
-      const errorToken = { error: message.signup.existinguser }
+      const errorToken = { error: message.signup.existinguser };
       return res.status(200).send({errorToken});
     };
     
@@ -28,7 +28,6 @@ router.post('/', async (req, res) => {
       googlePic: null
     };
 
-    
     const salt = await bcrypt.genSalt();
     userData.password = await bcrypt.hash(user.password, salt);
     

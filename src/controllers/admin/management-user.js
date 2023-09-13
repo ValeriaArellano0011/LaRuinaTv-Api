@@ -6,12 +6,13 @@ const { User } = require("../../models/User");
 const bcrypt = require("bcrypt");
 
 router.post("/create", async (req, res) => {
+/*   const userToken = req.headers.authorization;
+  if(!userToken) return res.status(403).json({ message: message.admin.permissionDenied });
+
+  const decodedToken = await decodeToken(userToken);
+  if(decodedToken.data.role !== roles.admin) return res.status(403).json({ message: message.admin.permissionDenied });
+ */
   try {
-    const userToken = req.headers.authorization;
-    const decodedToken = await decodeToken(userToken);
-
-    if(decodedToken.data.role !== roles.admin) return res.status(403).json({ message: message.admin.permissionDenied });
-
     const { username, email, password, profilePic, role } = req.body;
 
     const userData = {
@@ -38,12 +39,13 @@ router.post("/create", async (req, res) => {
 });
 
 router.patch("/update/:id", async (req, res) => {
+  const userToken = req.headers.authorization;
+  if(!userToken) return res.status(403).json({ message: message.admin.permissionDenied });
+
+  const decodedToken = await decodeToken(userToken);
+  if(decodedToken.data.role !== roles.admin) return res.status(403).json({ message: message.admin.permissionDenied });
+  
   try {
-    const userToken = req.headers.authorization;
-    const decodedToken = await decodeToken(userToken);
-
-    if(decodedToken.data.role !== roles.admin) return res.status(403).json({ message: message.admin.permissionDenied });
-
     const { id } = req.params;
     const { body } = req;
 
@@ -66,8 +68,9 @@ router.patch("/update/:id", async (req, res) => {
 
 router.delete("/delete/:id", async (req, res) => {
   const userToken = req.headers.authorization;
-  const decodedToken = await decodeToken(userToken);
+  if(!userToken) return res.status(403).json({ message: message.admin.permissionDenied });
 
+  const decodedToken = await decodeToken(userToken);
   if(decodedToken.data.role !== roles.admin) return res.status(403).json({ message: message.admin.permissionDenied });
 
   try {

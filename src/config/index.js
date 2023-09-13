@@ -11,8 +11,6 @@ module.exports = {
 
   idVisorFolder: process.env.VISOR_FOLDER,
   idSliderFolder: process.env.SLIDER_FOLDER,
-  idAudioFolder: process.env.AUDIO_FOLDER,
-  idVideoFolder: process.env.VIDEO_FOLDER,
   
   mediaClientId: process.env.MEDIA_CLIENT_ID,
   mediaClientSecret: process.env.MEDIA_CLIENT_SECRET,

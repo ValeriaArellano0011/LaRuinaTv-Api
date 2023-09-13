@@ -19,7 +19,7 @@ passport.deserializeUser((user, done) => {
 router.get('/', passport.authenticate('login-google', { state: '200' }));
 
 router.get('/callback', passport.authenticate('login-google', {
-  successRedirect: `/login-google/success`,
+  successRedirect: '/login-google/success',
   failureRedirect: '/login-google/failure'
 }));
 

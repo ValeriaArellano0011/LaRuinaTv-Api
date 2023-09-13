@@ -6,6 +6,7 @@ module.exports = {
         success: "Media created successfully",
         failure: "Failed to creating media",
         error: "Error creating media",
+        titleAlreadyExists: "Title already exists",
       },
       updatemedia: {
         success: "Media updated successfully",

@@ -19,7 +19,7 @@ router.get("/", async(req, res) => {
       role: user.dataValues.role,
       profilePic: user.dataValues.profilePic || user.dataValues.googlePic
     }
-
+    
     return res.status(200).send({ logged: true, userData });
     
   } catch (error) {
