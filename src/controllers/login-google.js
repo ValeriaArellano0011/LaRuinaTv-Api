@@ -19,28 +19,27 @@ passport.deserializeUser((user, done) => {
 router.get('/', passport.authenticate('login-google', { state: '200' }));
 
 router.get('/callback', passport.authenticate('login-google', {
-  successRedirect: `/auth/user/google/login/success`,
-  failureRedirect: '/auth/user/google/login/failure'
+  successRedirect: `/login-google/success`,
+  failureRedirect: '/login-google/failure'
 }));
 
 router.get('/success', async (req, res) => {
   try {
     const user = req.session.passport.user;
     const userExist = await User.findOne({ where: { email: user.email }});
-
+    console.log("userExisttttttt", userExist);
+    
     if (userExist) {
-      const { id, status } = userExist;
-      const data_login = { id, status }
-      const token = await createToken(data_login, 3)
-      console.log('token', token)
+      const { id } = userExist;
+      const data_login = { id };
+      const token = await createToken(data_login, 3);
 
-      return res.status(200).redirect(`${clientUrl}/auth?token=${token}`);
-
+      return res.status(200).redirect(`${clientUrl}/#/auth?token=${token}`);
     } else {
-      return res.status(400).redirect(`${clientUrl}/auth?token=none`);
+      return res.status(400).redirect(`${clientUrl}/#/auth?token=none`);
     }
   } catch (error) {
-    return res.status(400).redirect(`${clientUrl}/auth?token=none`);
+    return res.status(400).redirect(`${clientUrl}/#/auth?token=none`);
   }
 });
 

@@ -5,7 +5,7 @@ const loginGoogle = new GoogleStrategy(
   {
     clientID: authClientId,
     clientSecret: authClientSecret,
-    callbackURL: `${apiUrl}/auth/user/google/login/callback`,
+    callbackURL: `${apiUrl}/login-google/callback`,
     scope: [
       'email',
       'profile',
@@ -34,7 +34,7 @@ const signupGoogle = new GoogleStrategy(
   {
     clientID: authClientId,
     clientSecret: authClientSecret,
-    callbackURL: `${apiUrl}/auth/user/google/login/callback`,
+    callbackURL: `${apiUrl}/signup-google/callback`,
     scope: [
       'email',
       'profile',
