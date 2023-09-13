@@ -5,9 +5,13 @@ const routes = require("./routes");
 const morgan = require("morgan");
 const session = require("express-session");
 
-const bodyParser = require("body-parser");
 const passport = require("passport");
+const bodyParser = require("body-parser");
 const { privateSecret } = require("./config");
+
+server.use(bodyParser.json({limit: '100mb'}));
+server.use(bodyParser.urlencoded({limit: '100mb', extended: true}));
+server.use(morgan('dev'));
 
 server.use((req, res, next) => {
   console.log('request from:', req.headers.origin);
@@ -33,7 +37,6 @@ server.use(session({
 server.use(passport.initialize());
 server.use(bodyParser.json());
 server.use(passport.session());
-server.use(morgan('dev'));
 server.use('/', routes);
 
 module.exports = server;
