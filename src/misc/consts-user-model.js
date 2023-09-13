@@ -3,12 +3,12 @@ module.exports = {
     active: "active",
     inactive: "inactive"
   },
-  role: {
+  roles: {
     admin: "admin",
     freemium: "freemium",
     subscriptor: "subscriptor"
   },
-  method: {
+  methods: {
     inner: "inner",
     google: "google",
     adminManagement: "admin-management"

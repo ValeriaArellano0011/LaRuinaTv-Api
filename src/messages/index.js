@@ -1,6 +1,7 @@
 module.exports = {
   message: {
     admin:{
+      permissionDenied: "Permission denied",
       createmedia: {
         success: "Media created successfully",
         failure: "Failed to creating media",

@@ -1,9 +1,16 @@
 const router = require("express").Router();
+const { decodeToken } = require("../../integrations/jwt");
 const { message } = require("../../messages");
+const { roles } = require("../../misc/consts-user-model");
 const { Media } = require("../../models/Media");
 
 router.post("/create", async (req, res) => {
   try {
+    const userToken = req.headers.authorization;
+    const decodedToken = await decodeToken(userToken);
+
+    if(decodedToken.data.role !== roles.admin) return res.status(403).json({ message: message.admin.permissionDenied });
+  
     const { body } = req;
     await Media.create(body);
     return res.status(200).json({ message: message.admin.createmedia.success });
@@ -13,6 +20,11 @@ router.post("/create", async (req, res) => {
 });
 
 router.patch("/update/:id", async (req, res) => {
+  const userToken = req.headers.authorization;
+  const decodedToken = await decodeToken(userToken);
+
+  if(decodedToken.data.role !== roles.admin) return res.status(403).json({ message: message.admin.permissionDenied });
+
   try {
     const { id } = req.params;
     const { body } = req;
@@ -34,6 +46,11 @@ router.patch("/update/:id", async (req, res) => {
 });
 
 router.delete("/delete/:id", async (req, res) => {
+  const userToken = req.headers.authorization;
+  const decodedToken = await decodeToken(userToken);
+
+  if(decodedToken.data.role !== roles.admin) return res.status(403).json({ message: message.admin.permissionDenied });
+
   try {
     const { id } = req.params;
 

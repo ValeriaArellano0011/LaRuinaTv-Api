@@ -27,11 +27,10 @@ router.get('/success', async (req, res) => {
   try {
     const user = req.session.passport.user;
     const userExist = await User.findOne({ where: { email: user.email }});
-    console.log("userExisttttttt", userExist);
     
     if (userExist) {
-      const { id } = userExist;
-      const data_login = { id };
+      const { id, role } = userExist;
+      const data_login = { id, role };
       const token = await createToken(data_login, 3);
 
       return res.status(200).redirect(`${clientUrl}/#/auth?token=${token}`);

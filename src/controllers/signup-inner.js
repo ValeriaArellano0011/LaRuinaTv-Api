@@ -3,7 +3,7 @@ const router = express.Router();
 const { User } = require("../models/User");
 const bcrypt = require("bcrypt");
 const { message } = require("../messages");
-const { status, role, method } = require("../misc/consts-user-model");
+const { status, roles, methods } = require("../misc/consts-user-model");
 
 router.post('/', async (req, res) => {
   try {
@@ -22,8 +22,8 @@ router.post('/', async (req, res) => {
       profilePic: user.profilePic,
       status: status.inactive,
       isVerified: false,
-      method: method.inner,
-      role: role.freemium,
+      method: methods.inner,
+      role: roles.freemium,
       googleId: null,
       googlePic: null
     };
