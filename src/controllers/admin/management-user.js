@@ -39,12 +39,12 @@ router.post("/create", async (req, res) => {
 });
 
 router.patch("/update/:id", async (req, res) => {
-/*   const userToken = req.headers.authorization;
+  const userToken = req.headers.authorization;
   if(!userToken) return res.status(403).json({ message: message.admin.permissionDenied });
 
   const decodedToken = await decodeToken(userToken);
   if(decodedToken.data.role !== roles.admin) return res.status(403).json({ message: message.admin.permissionDenied });
- */  
+
   try {
     const { id } = req.params;
     const { body } = req;
