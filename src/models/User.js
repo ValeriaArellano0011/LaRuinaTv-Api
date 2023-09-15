@@ -3,9 +3,10 @@ const { sequelize } = require('../integrations/postgreSQL');
 
 const User = sequelize.define('user', {
   id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
+    type: DataTypes.STRING,
     primaryKey: true,
+    allowNull: false,
+    defaultValue: () => bcrypt.hashSync(Math.random().toString(), 10),
   },
   username: {
     type: DataTypes.STRING,

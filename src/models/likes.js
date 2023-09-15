@@ -4,9 +4,10 @@ const { User } = require('./User.js')
 
 const Likes = sequelize.define('likes', {
     id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
+      type: DataTypes.STRING,
       primaryKey: true,
+      allowNull: false,
+      defaultValue: () => bcrypt.hashSync(Math.random().toString(), 10),
     },
     urlId:{
       type: DataTypes.STRING,

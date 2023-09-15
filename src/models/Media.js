@@ -4,9 +4,10 @@ const { Likes } = require('./Likes.js')
 
 const Media = sequelize.define('media', {
     id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.STRING,
         primaryKey: true,
+        allowNull: false,
+        defaultValue: () => bcrypt.hashSync(Math.random().toString(), 10),
     },
     artist: {
         type: DataTypes.STRING,
