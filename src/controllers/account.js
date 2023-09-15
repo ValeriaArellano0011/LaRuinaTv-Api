@@ -3,7 +3,7 @@ const { decodeToken } = require('../integrations/jwt');
 const { message } = require('../messages');
 const { User } = require('../models/User');
 
-router.get("/", async(req, res) => {
+router.get("/my-data", async(req, res) => {
   try {
     const userToken = req.headers.authorization;
     const decodedToken = await decodeToken(userToken);
