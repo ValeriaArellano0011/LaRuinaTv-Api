@@ -39,12 +39,12 @@ router.post("/create", async (req, res) => {
 });
 
 router.patch("/update/:id", async (req, res) => {
-  const userToken = req.headers.authorization;
+/*   const userToken = req.headers.authorization;
   if(!userToken) return res.status(403).json({ message: message.admin.permissionDenied });
 
   const decodedToken = await decodeToken(userToken);
   if(decodedToken.data.role !== roles.admin) return res.status(403).json({ message: message.admin.permissionDenied });
-  
+ */  
   try {
     const { id } = req.params;
     const { body } = req;
@@ -53,13 +53,10 @@ router.patch("/update/:id", async (req, res) => {
     if (!existingUser) return res.status(404).json({ message: message.admin.updateuser.failure });
 
     const salt = await bcrypt.genSalt();
-    body.password = await bcrypt.hash(body.password, salt);
+    if(body?.password) body.password = await bcrypt.hash(body.password, salt);
 
-    await User.update(body, {
-      where: {
-        id: id
-      }
-    });
+    await User.update(body, { where: { id: id } });
+    
     return res.status(200).json({ message: message.admin.updateuser.success });
   } catch (error) {
     return res.status(500).send({ error : message.admin.updateuser.error });
