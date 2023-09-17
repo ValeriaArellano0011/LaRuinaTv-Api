@@ -43,7 +43,6 @@ const DB_LARUINATV_MEDIA = [
         actionButton:'Escuchar',
         info:'Lanzamiento en vivo del álbum "Pobre, Muerto, Aburrido" de la banda "Paranoia" en las estancias de "PerroNegro"',
         genre: 'punk'
-
     },
     {
         id: 3,
