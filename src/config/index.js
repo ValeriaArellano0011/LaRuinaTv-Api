@@ -5,6 +5,12 @@ module.exports = {
   port: process.env.PORT,
   apiUrl: process.env.NODE_ENV === production ? process.env.API_URL_PROD : process.env.API_URL,
   clientUrl: process.env.NODE_ENV === production ? process.env.CLIENT_URL_PROD : process.env.CLIENT_URL,
+  
+  ytLaruinatvChannel: process.env.YT_LARUINATV_CHANNEL,
+  ytClientId: process.env.YT_CLIENT_ID,
+  ytClientSecret: process.env.YT_CLIENT_SECRET,
+  ytRefreshToken: process.env.YT_REFRESH_TOKEN,
+  ytAccessToken: process.env.YT_ACCESS_TOKEN,
 
   privateSecret: process.env.PRIVATE_SECRET,
   defaultPassword: process.env.DEFAULT_PASSWORD,

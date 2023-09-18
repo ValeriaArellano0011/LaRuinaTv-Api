@@ -1,10 +1,10 @@
 const { google } = require("googleapis");
-const { refreshToken, mediaClientId, mediaClientSecret } = require("../config");
+const { refreshToken, mediaClientId, mediaClientSecret, redirectUri } = require("../config");
 
 const oauth2Client = new google.auth.OAuth2(
   mediaClientId,
   mediaClientSecret,
-  'https://developers.google.com/oauthplayground'
+  redirectUri
 );
 
 oauth2Client.setCredentials({ refresh_token: refreshToken });
