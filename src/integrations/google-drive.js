@@ -45,6 +45,10 @@ const saveImageToDrive = async (imageBase64, folderId, filename) => {
         resource: fileMetadata,
         media: media,
         fields: 'id',
+        requestBody: {
+          role: "reader",
+          type: "anyone",
+        },
       },
     );
     return response.data.id;

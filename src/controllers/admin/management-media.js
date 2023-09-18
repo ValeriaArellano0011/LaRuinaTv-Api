@@ -11,26 +11,27 @@ router.post("/create", async (req, res) => {
   if (!userToken) return res.status(403).json({ message: message.admin.permissionDenied });
 
   const decodedToken = await decodeToken(userToken);
-  if (decodedToken.data.role !== roles.admin) return res.status(403).json({ message: message.admin.permissionDenied });
+  if (decodedToken?.data?.role !== roles.admin) return res.status(403).json({ message: message.admin.permissionDenied });
 
   try {
     const { body } = req;
     const { imageVisor, imageSlider, artist, title } = body;
-    const existingTitle = await Media.findOne({ where: { title: title } });
-    if (existingTitle) return res.status(400).json({ message: message.admin.createmedia.titleAlreadyExists });
+
+    console.log(body)
+
     if (imageSlider) {
       const filename = artist + "_" + title + "_" + "slider";
       const responseSlider = await saveImageToDrive(imageSlider, idSliderFolder, filename);
       console.log(responseSlider)
       body.imageSlider = responseSlider;
-    }
+    };
 
     if (imageVisor) {
       const filename = artist + "_" + title + "_" + "visor";
       const responseVisor = await saveImageToDrive(imageVisor, idVisorFolder, filename);
       console.log(responseVisor)
       body.imageVisor = responseVisor;
-    }
+    };
 
     await Media.create(body);
     return res.status(200).json({ message: message.admin.createmedia.success });
