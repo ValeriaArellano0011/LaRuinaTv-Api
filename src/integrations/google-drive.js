@@ -35,7 +35,7 @@ const saveImageToDrive = async (imageBase64, folderId, filename) => {
   };
 
   const media = {
-    mimeType: 'image/jpg',
+    mimeType: 'image/jpeg',
     body: imageBase64,
   };
 
@@ -45,10 +45,6 @@ const saveImageToDrive = async (imageBase64, folderId, filename) => {
         resource: fileMetadata,
         media: media,
         fields: 'id',
-        requestBody: {
-          role: "reader",
-          type: "anyone",
-        },
       },
     );
     return response.data.id;
@@ -58,6 +54,36 @@ const saveImageToDrive = async (imageBase64, folderId, filename) => {
   };
 };
 
+const updateImageInDrive = async (fileId, imageBase64) => {
+  try {
+    const response = await drive.files.update({
+      fileId: fileId,
+      media: {
+        mimeType: 'image/jpeg',
+        body: imageBase64,
+      },
+    });
+    return response.data.id;
+  } catch (error) {
+    console.error('Error al actualizar el archivo en Google Drive:', error);
+    return null;
+  }
+};
+
+const removeFileFromDrive = async (fileId) => {
+  try {
+    await drive.files.delete({
+      fileId: fileId,
+    });
+    return;
+  } catch (error) {
+    console.error('Error al eliminar el archivo de Google Drive:', error);
+    return false;
+  }
+};
+
 module.exports = {
-  saveImageToDrive
+  saveImageToDrive,
+  updateImageInDrive,
+  removeFileFromDrive
 };

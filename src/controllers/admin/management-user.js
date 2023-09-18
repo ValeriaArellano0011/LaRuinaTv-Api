@@ -43,7 +43,7 @@ router.patch("/update/:id", async (req, res) => {
   if(!userToken) return res.status(403).json({ message: message.admin.permissionDenied });
 
   const decodedToken = await decodeToken(userToken);
-  if(decodedToken.data.role !== roles.admin) return res.status(403).json({ message: message.admin.permissionDenied });
+  if(decodedToken?.data?.role !== roles.admin) return res.status(403).json({ message: message.admin.permissionDenied });
 
   try {
     const { id } = req.params;
@@ -68,7 +68,7 @@ router.delete("/delete/:id", async (req, res) => {
   if(!userToken) return res.status(403).json({ message: message.admin.permissionDenied });
 
   const decodedToken = await decodeToken(userToken);
-  if(decodedToken.data.role !== roles.admin) return res.status(403).json({ message: message.admin.permissionDenied });
+  if(decodedToken?.data?.role !== roles.admin) return res.status(403).json({ message: message.admin.permissionDenied });
 
   try {
     const { id } = req.params;
