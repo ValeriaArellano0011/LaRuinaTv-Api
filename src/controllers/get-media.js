@@ -9,7 +9,7 @@ router.get("/", async (req, res) => {
   } catch (error) {
     return res.status(500).send({ error : message.media.error });
   }
-})
+});
 
 router.get("/:id", async (req, res) => {
   try {
@@ -19,6 +19,6 @@ router.get("/:id", async (req, res) => {
   } catch (error) {
     return res.status(500).send({ error : message.media.error })
   }
-})
+});
 
 module.exports = router;

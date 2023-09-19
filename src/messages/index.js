@@ -55,6 +55,9 @@ module.exports = {
       error: "Error",
       existing: "Media already exists",
       notfound: "Media not found",
+    },
+    category: {
+      error: "Error",
     }
   }
 }

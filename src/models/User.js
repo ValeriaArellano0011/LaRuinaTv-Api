@@ -1,13 +1,12 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes, Sequelize } = require("sequelize");
 const { sequelize } = require('../integrations/postgreSQL');
-const bcrypt = require("bcrypt");
 
 const User = sequelize.define('user', {
   id: {
-    type: DataTypes.STRING,
+    type: DataTypes.UUID,
+    defaultValue: Sequelize.UUIDV4,
     primaryKey: true,
     allowNull: false,
-    defaultValue: () => bcrypt.hashSync(Math.random().toString(), 10).replace(/\//g, ''),
   },
   username: {
     type: DataTypes.STRING,

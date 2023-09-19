@@ -1,15 +1,15 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes, Sequelize } = require("sequelize");
 const { sequelize } = require('../integrations/postgreSQL');
 const { Likes } = require('./Likes.js');
 const bcrypt = require("bcrypt");
 
 const Media = sequelize.define('media', {
     id: {
-        type: DataTypes.STRING,
+        type: DataTypes.UUID,
+        defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
         allowNull: false,
-        defaultValue: () => bcrypt.hashSync(Math.random().toString(), 10).replace(/\//g, ''),
-    },
+      },
     artist: {
         type: DataTypes.STRING,
         allowNull: true
@@ -55,7 +55,5 @@ const Media = sequelize.define('media', {
         allowNull: true
     },
 });
-
-Likes.hasMany(Media, { foreignKey: 'mediaId' });
 
 module.exports = { Media };

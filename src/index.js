@@ -4,7 +4,7 @@ const { port, environment } = require("./config");
 const { sequelize } = require("./integrations/postgreSQL");
 
 async function main() {
-  console.log(environment)
+  console.log(environment);
   try {
     await sequelize.sync({force: false});
     console.log("Succesfully connected");
