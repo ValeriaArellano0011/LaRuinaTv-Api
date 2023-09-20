@@ -45,8 +45,4 @@ router.delete("/delete/:id", async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 module.exports = router;
-=======
-module.exports = router;
->>>>>>> parent of 0edb75f (Revert "categories, genres and mediatypes requests for create, update and delete")
