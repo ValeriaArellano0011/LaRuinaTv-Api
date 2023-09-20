@@ -3,7 +3,7 @@ const { sequelize } = require('../integrations/postgreSQL');
 const { Media } = require("./Media");
 
 
-const Genre = sequelize.define('genre', {
+const Mediatype = sequelize.define('mediatype', {
   id: {
     type: DataTypes.UUID,
     defaultValue: Sequelize.UUIDV4,
@@ -17,7 +17,7 @@ const Genre = sequelize.define('genre', {
   }
 })
 
-Media.belongsToMany(Genre, { through: 'MediaGenre' });
-Genre.belongsToMany(Media, { through: 'MediaGenre' });
+Media.belongsToMany(Mediatype, { through: 'MediaMediatype' });
+Mediatype.belongsToMany(Media, { through: 'MediaMediatype' });
 
-module.exports = { Genre };
+module.exports = { Mediatype };
