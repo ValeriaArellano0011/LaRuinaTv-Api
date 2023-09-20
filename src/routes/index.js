@@ -10,9 +10,6 @@ const innerLogin = require('../controllers/login-inner');
 const googlLogin = require('../controllers/login-google');
 const mercadopago = require("../integrations/mercadopago.js");
 const yt = require('../controllers/yt');
-const category = require('../controllers/get-category')
-const mediatype = require('../controllers/get-mediatype')
-const genre = require('../controllers/get-genre')
 
 router.use("/auth", auth);
 router.use("/user", user);
@@ -22,9 +19,6 @@ router.use("/media", media);
 router.use("/likes", likes);
 router.use("/login-inner", innerLogin);
 router.use("/login-google", googlLogin);
-router.use('/category', category);
-router.use('/mediatype', mediatype);
-router.use('/genre', genre);
 
 router.use("/mercadopago", mercadopago);
 router.use('/yt', yt);
