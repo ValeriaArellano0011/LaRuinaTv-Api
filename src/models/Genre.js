@@ -1,7 +1,6 @@
 const { DataTypes, Sequelize } = require("sequelize");
 const { sequelize } = require('../integrations/postgreSQL');
-const { Media } = require("./Media");
-
+const bcrypt = require("bcrypt");
 
 const Genre = sequelize.define('genre', {
   id: {
@@ -16,8 +15,5 @@ const Genre = sequelize.define('genre', {
     allowNull: false
   }
 })
-
-Media.belongsToMany(Genre, { through: 'MediaGenre' });
-Genre.belongsToMany(Media, { through: 'MediaGenre' });
 
 module.exports = { Genre };

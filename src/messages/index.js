@@ -1,13 +1,5 @@
 module.exports = {
   message: {
-    update:{
-      success: "Successfully updated",
-      error:"Error updating",
-    },
-    delete: {
-      success: "Successfully deleted",
-      error: "Error deleting"
-    },
     admin:{
       permissionDenied: "Permission denied",
       createmedia: {
@@ -66,18 +58,6 @@ module.exports = {
     },
     category: {
       error: "Error",
-      successful: "Category created successfully",
-      existing: "Category name already exists",
-    },
-    genre: {
-      error: "Error",
-      successful: "Genre created successfully",
-      existing: "Genre name already exists",
-    },
-    mediatype: {
-      error: "Error",
-      successful: "Mediatype created successfully",
-      existing: "Mediatype name already exists",
     }
   }
 }
